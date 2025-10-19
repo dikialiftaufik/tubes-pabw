@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FeedbackController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,3 +21,4 @@ Route::get('/menu', [MenuController::class, 'index']);
 Route::get('admin/menus', [AdminMenuController::class, 'index']);
 Route::get('admin/reports', [ReportController::class, 'salesReport']);
 Route::get('admin/notifications', [NotificationController::class, 'index']);
+Route::get('admin/feedback', [FeedbackController::class, 'index']);
