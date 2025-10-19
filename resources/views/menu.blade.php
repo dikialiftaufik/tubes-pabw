@@ -133,7 +133,7 @@
 
             <!-- Center Logo -->
             <a class="navbar-brand mx-auto" href="#">
-                <i class="fa-solid fa-utensils"></i> BOXSATE
+                <i class="fa-solid fa-utensils"></i> THE KOMAR'S
             </a>
 
             <!-- Right Links & Icons -->
@@ -191,7 +191,7 @@
 
     <!-- Footer -->
     <footer class="text-center text-white-50">
-        <p>&copy; 2024 Restoran Nusantara. Didesain dengan penuh cita rasa.</p>
+        <p>&copy; 2025 Restoran Nusantara. Didesain dengan penuh cita rasa.</p>
     </footer>
 
     <!-- Bootstrap JS -->
