@@ -10,6 +10,7 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CustomerController;
 
 Route::get('/', function () {
@@ -28,5 +29,7 @@ Route::get('admin/notifications', [NotificationController::class, 'index']);
 Route::get('admin/feedback', [FeedbackController::class, 'index']);
 Route::get('admin/resevations', [ReservationController::class, 'index']);
 Route::get('admin/customers', [CustomerController::class, 'index']);
+Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
