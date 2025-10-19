@@ -23,7 +23,7 @@
     @foreach ($menus as $index => $menu)
     <div class="col-md-4">
         <div class="card text-center bg-dark text-white shadow-sm border-0 p-3">
-            <img src="{{ asset('assets/' . $menu['gambar']) }}"
+            <img src="{{ asset('img/menu/' . $menu['gambar']) }}"
                 class="card-img-top rounded mb-3"
                 alt="{{ $menu['nama'] }}"
                 style="height: 200px; object-fit: cover;">
