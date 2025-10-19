@@ -14,16 +14,16 @@ class MenuController extends Controller
         // Data menu makanan dalam bentuk array (tanpa database)
         $menuMakanan = [
             [
-                'nama' => 'Sate Ayam Spesial',
+                'nama' => 'Sate Ayam',
                 'deskripsi' => 'Sate ayam dengan bumbu kacang khas, disajikan dengan lontong dan irisan bawang merah.',
                 'harga' => 25000,
-                'gambar' => 'https://placehold.co/600x400/FFC107/000000?text=Sate+Ayam',
+                'gambar' => asset('img/menu/sate-ayam.jpg'),
             ],
             [
                 'nama' => 'Tengkleng Iga Sapi',
                 'deskripsi' => 'Potongan iga sapi empuk yang dimasak dengan bumbu rempah kaya rasa, sedikit pedas.',
                 'harga' => 45000,
-                'gambar' => 'https://placehold.co/600x400/DC3545/FFFFFF?text=Tengkleng',
+                'gambar' => asset('img/menu/tengkleng-kambing.jpg'),
             ],
             [
                 'nama' => 'Nasi Goreng Nusantara',
