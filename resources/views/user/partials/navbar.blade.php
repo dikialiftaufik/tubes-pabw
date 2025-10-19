@@ -20,6 +20,7 @@
                 <li class="nav-item"><a class="nav-link" href="#">Lokasi</a></li>
                 <li class="nav-item"><a class="nav-link {{ request()->routeIs('feedback.form') ? 'active' : '' }}" href="{{ route('feedback.form') }}">Feedback</a></li>
                 <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i></a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-bell"></i></a></li>
                 <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-user"></i></a></li>
             </ul>
         </div>
