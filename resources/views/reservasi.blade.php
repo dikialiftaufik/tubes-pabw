@@ -162,7 +162,7 @@
     <section class="hero-section">
         <div class="hero-content text-white">
             <h1>Form Reservasi</h1>
-            <p class="lead">Cita rasa terbaik dari dapur tradisional kami.</p>
+            <p class="lead">Booking tempatmu sekarang juga.</p>
         </div>
     </section>
 
