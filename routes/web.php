@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminMenuController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -12,3 +16,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::get('/menu', [MenuController::class, 'index']);
+Route::get('admin/menus', [AdminMenuController::class, 'index']);
+Route::get('admin/reports', [ReportController::class, 'salesReport']);
+Route::get('admin/notifications', [NotificationController::class, 'index']);

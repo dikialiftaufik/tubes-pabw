@@ -1,38 +1,20 @@
-{{-- Menggunakan layout utama dari template AdminLTE --}}
 @extends('adminlte::page')
 
-{{-- Judul halaman (muncul di tab browser) --}}
-@section('title', 'Dashboard Admin')
+@section('title', 'Dashboard')
 
-{{-- Judul konten (muncul di bagian atas halaman) --}}
 @section('content_header')
     <h1 class="m-0 text-dark">Dashboard</h1>
 @stop
 
-{{-- Konten utama halaman --}}
 @section('content')
-    {{-- Baris untuk kartu statistik --}}
+    {{-- Baris untuk Small Box --}}
     <div class="row">
         <div class="col-lg-3 col-6">
-            {{-- Kartu kecil (small box) untuk total pesanan --}}
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{ $totalPesanan }}</h3>
-                    <p>Total Pesanan Hari Ini</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <a href="#" class="small-box-footer">Info lebih lanjut <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            {{-- Kartu kecil untuk pendapatan --}}
+            {{-- Kartu untuk Total Pendapatan --}}
             <div class="small-box bg-success">
                 <div class="inner">
-                    {{-- 'number_format' adalah fungsi PHP untuk format angka --}}
-                    <h3>Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h3>
-                    <p>Pendapatan Hari Ini</p>
+                    <h3>Rp {{ number_format($statistik['totalPendapatan'], 0, ',', '.') }}</h3>
+                    <p>Total Pendapatan</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-dollar-sign"></i>
@@ -41,11 +23,24 @@
             </div>
         </div>
         <div class="col-lg-3 col-6">
-            {{-- Kartu kecil untuk reservasi --}}
+            {{-- Kartu untuk Total Pesanan --}}
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>{{ $statistik['totalPesanan'] }}</h3>
+                    <p>Total Pesanan</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <a href="#" class="small-box-footer">Info lebih lanjut <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            {{-- Kartu untuk Total Reservasi --}}
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ $totalReservasi }}</h3>
-                    <p>Reservasi Tertunda</p>
+                    <h3>{{ $statistik['totalReservasi'] }}</h3>
+                    <p>Total Reservasi</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-calendar-check"></i>
@@ -54,11 +49,11 @@
             </div>
         </div>
         <div class="col-lg-3 col-6">
-            {{-- Kartu kecil untuk pelanggan baru --}}
-            <div class="small-box bg-danger">
+            {{-- Kartu untuk Pelanggan Baru --}}
+            <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ $pelangganBaru }}</h3>
-                    <p>Pelanggan Baru</p>
+                    <h3>{{ $statistik['pelangganBaru'] }}</h3>
+                    <p>Pelanggan Baru (Bulan Ini)</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-user-plus"></i>
@@ -68,77 +63,124 @@
         </div>
     </div>
 
-    {{-- Baris untuk tabel data --}}
+    {{-- Baris untuk Grafik --}}
     <div class="row">
-        {{-- Kolom untuk tabel pesanan terbaru --}}
-        <div class="col-md-7">
+        <div class="col-lg-7">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Pesanan Makanan Terbaru</h3>
+                    <h3 class="card-title"><i class="fas fa-chart-line"></i> Grafik Pendapatan (7 Hari Terakhir)</h3>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th style="width: 10px">ID</th>
-                                <th>Pelanggan</th>
-                                <th>Total Harga</th>
-                                <th style="width: 40px">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {{-- '@foreach' adalah loop dari Blade untuk mengulang data array --}}
-                            @foreach ($pesananTerbaru as $pesanan)
-                                <tr>
-                                    <td>{{ $pesanan['id'] }}</td>
-                                    <td>{{ $pesanan['pelanggan'] }}</td>
-                                    <td>Rp {{ number_format($pesanan['total'], 0, ',', '.') }}</td>
-                                    <td>
-                                        {{-- '@if' untuk membuat kondisi tampilan berdasarkan status --}}
-                                        @if ($pesanan['status'] == 'Selesai')
-                                            <span class="badge bg-success">Selesai</span>
-                                        @elseif ($pesanan['status'] == 'Diproses')
-                                            <span class="badge bg-warning">Diproses</span>
-                                        @else
-                                            <span class="badge bg-danger">Batal</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="card-body">
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
         </div>
-        {{-- Kolom untuk tabel reservasi akan datang --}}
-        <div class="col-md-5">
+        <div class="col-lg-5">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Reservasi Tempat Akan Datang</h3>
+                    <h3 class="card-title"><i class="fas fa-chart-pie"></i> Menu Terlaris (Minggu Ini)</h3>
                 </div>
-                <div class="card-body p-0">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Pelanggan</th>
-                                <th>Meja</th>
-                                <th>Waktu</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($reservasiAkanDatang as $reservasi)
-                                <tr>
-                                    <td>{{ $reservasi['id'] }}</td>
-                                    <td>{{ $reservasi['pelanggan'] }} ({{ $reservasi['jumlah_orang'] }} org)</td>
-                                    <td>{{ $reservasi['meja'] }}</td>
-                                    <td><span class="badge bg-info">{{ $reservasi['waktu'] }}</span></td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="card-body">
+                    <canvas id="topMenusChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 @stop
+
+@push('js')
+<script>
+    $(function () {
+        // --- SCRIPT UNTUK GRAFIK PENDAPATAN (TETAP SAMA) ---
+        const revenueLabels = @json($labelsPendapatan);
+        const revenueData = @json($dataPendapatan);
+
+        var revenueChartCanvas = $('#revenueChart').get(0).getContext('2d');
+        var revenueChartData = {
+            labels: revenueLabels,
+            datasets: [{
+                label: 'Pendapatan',
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                pointRadius: 5,
+                pointColor: '#28a745',
+                pointStrokeColor: 'rgba(40, 167, 69, 1)',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(40, 167, 69, 1)',
+                data: revenueData
+            }]
+        };
+
+        var revenueChartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            legend: { display: false },
+            scales: {
+                xAxes: [{ gridLines: { display: false } }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function(value, index, values) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                        }
+                    }
+                }]
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        return ' Pendapatan: Rp ' + new Intl.NumberFormat('id-ID').format(tooltipItem.yLabel);
+                    }
+                }
+            }
+        };
+
+        new Chart(revenueChartCanvas, {
+            type: 'line',
+            data: revenueChartData,
+            options: revenueChartOptions
+        });
+
+        // --- SCRIPT BARU UNTUK GRAFIK MENU TERLARIS (PIE CHART) ---
+        const topMenusLabels = @json($menuTerlaris['labels']);
+        const topMenusData = @json($menuTerlaris['data']);
+
+        var topMenusChartCanvas = $('#topMenusChart').get(0).getContext('2d');
+        var topMenusChartData = {
+            labels: topMenusLabels,
+            datasets: [{
+                data: topMenusData,
+                backgroundColor: ['#d9534f', '#5cb85c', '#f0ad4e', '#5bc0de', '#337ab7'],
+            }]
+        };
+
+        var topMenusChartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            legend: {
+                position: 'right',
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var dataset = data.datasets[tooltipItem.datasetIndex];
+                        var total = dataset.data.reduce(function(previousValue, currentValue) {
+                            return previousValue + currentValue;
+                        });
+                        var currentValue = dataset.data[tooltipItem.index];
+                        var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+                        return ' ' + data.labels[tooltipItem.index] + ': ' + currentValue + ' porsi (' + percentage + '%)';
+                    }
+                }
+            }
+        };
+
+        new Chart(topMenusChartCanvas, {
+            type: 'pie', // Mengubah tipe grafik menjadi 'pie'
+            data: topMenusChartData,
+            options: topMenusChartOptions
+        });
+    });
+</script>
+@endpush
+
