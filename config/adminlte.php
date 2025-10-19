@@ -387,14 +387,6 @@ return [
         'url'  => 'admin/profile',
         'icon' => 'fas fa-fw fa-user-cog',
     ],
-
-    // --- Tombol Logout diletakkan paling bawah ---
-    [
-        'text'   => 'Logout',
-        'route'  => 'logout', // Menggunakan route name 'logout' yang biasa dibuat Laravel
-        'icon'   => 'fas fa-fw fa-sign-out-alt text-danger',
-        'method' => 'POST', // Penting untuk keamanan
-    ],
 ],
 
 
