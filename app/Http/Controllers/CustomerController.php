@@ -25,6 +25,20 @@ class CustomerController extends Controller
             ],
             [
                 'id' => 3,
+                'name' => 'Zufar',
+                'email' => 'par@gmail.com',
+                'phone' => '0895331464728',
+                'joined' => '2024-09-04',
+            ],
+            [
+                'id' => 4,
+                'name' => 'Amara',
+                'email' => 'mara@gmail.com',
+                'phone' => '081229120736',
+                'joined' => '2024-09-04',
+            ],
+            [
+                'id' => 5,
                 'name' => 'Yani',
                 'email' => 'yaniru@gmail.com',
                 'phone' => '089698765432',
