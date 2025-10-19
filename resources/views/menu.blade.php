@@ -127,7 +127,7 @@
                     <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/menu">Menu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Reservasi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/reservasi">Reservasi</a></li>
                 </ul>
             </div>
 
