@@ -127,7 +127,7 @@
                     <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">About</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/menu">Menu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Reservasi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/reservasi">Reservasi</a></li>
                 </ul>
             </div>
 
@@ -162,7 +162,7 @@
     <section class="hero-section">
         <div class="hero-content text-white">
             <h1>Form Reservasi</h1>
-            <p class="lead">Cita rasa terbaik dari dapur tradisional kami.</p>
+            <p class="lead">Booking tempatmu sekarang juga.</p>
         </div>
     </section>
 
