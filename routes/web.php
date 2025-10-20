@@ -33,8 +33,6 @@ Route::get('admin/notifications', [NotificationController::class, 'index']);
 Route::get('admin/feedback', [AdminFeedbackController::class, 'index']);
 Route::get('admin/resevations', [ReservationController::class, 'index']);
 Route::get('admin/customers', [CustomerController::class, 'index']);
-Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');
-Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
