@@ -133,7 +133,7 @@
 
             <!-- Center Logo -->
             <a class="navbar-brand mx-auto" href="#">
-                <i class="fa-solid fa-utensils"></i> BOXSATE
+                <i class="fa-solid fa-utensils"></i> The Komar's
             </a>
 
             <!-- Right Links & Icons -->
