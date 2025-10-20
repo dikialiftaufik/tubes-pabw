@@ -22,7 +22,7 @@
 
     <nav class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url('/') }}">🍢 BoloFood</a>
+            <a class="navbar-brand fw-bold" href="{{ url('/') }}">🍢 The Komar's</a>
             <span class="navbar-text text-secondary">Pembayaran</span>
         </div>
     </nav>
