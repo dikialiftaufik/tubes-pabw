@@ -14,13 +14,14 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\LandingPageController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing');
 });
 
-Auth::routes();
 
+Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index']);
