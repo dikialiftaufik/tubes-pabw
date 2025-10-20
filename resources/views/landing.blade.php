@@ -65,12 +65,12 @@
     }
 
     #reservation {
-      background-color: #1a1a1a; /* tetap gelap */
+      background-color: #1a1a1a;
       color: #eee;
     }
 
     .card {
-      background-color: #222; /* ganti putih dengan abu tua */
+      background-color: #222;
       color: #fff;
     }
 
@@ -84,6 +84,10 @@
       padding: 40px 0;
     }
 
+    .form-label {
+        color: 
+    }
+
     .form-control {
       background-color: #333;
       color: #fff;
@@ -95,13 +99,14 @@
     }
 
     .form-label {
-      color: #ccc;
+      color: #1a1a1a;
     }
 
     .btn-warning {
       background-color: #ffb300;
       border: none;
       color: #000;
+      margin: 15px;
     }
 
     .btn-warning:hover {
