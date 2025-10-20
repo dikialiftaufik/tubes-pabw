@@ -39,3 +39,5 @@ Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi
 Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
 Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
