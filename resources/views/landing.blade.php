@@ -187,8 +187,8 @@
                 <input type="text" id="name" class="form-control" placeholder="Nama lengkap" required>
               </div>
               <div class="col-md-6">
-                <label for="phone" class="form-label">Nomor Telepon</label>
-                <input type="tel" id="phone" class="form-control" placeholder="08xxxxxxxxxx" required>
+                <label for="phone" class="form-label">Jam </label>
+                <input type="time" id="time" class="form-control" placeholder="" required>
               </div>
               <div class="col-md-6">
                 <label for="date" class="form-label">Tanggal</label>
