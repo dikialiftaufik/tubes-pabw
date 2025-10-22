@@ -33,33 +33,51 @@
                         </thead>
                         <tbody>
                             {{-- Data 'tipe' ditambahkan di controller Anda --}}
-                            @php
-                            $menuData = collect($menuMakanan)->map(function($item, $key) {
-                                $types = ['Main Course', 'Appetizer', 'Dessert', 'Minuman'];
-                                $item['tipe'] = $types[$key % count($types)];
-                                return $item;
-                            });
-                            @endphp
-                            @foreach ($menuData as $key => $item)
-                                <tr>
-                                    <td class="text-center align-middle">{{ $key + 1 }}</td>
-                                    <td class="align-middle"><strong>{{ $item['nama'] }}</strong></td>
-                                    <td class="text-center align-middle">
-                                        <img src="{{ $item['gambar'] }}" alt="{{ $item['nama'] }}" class="img-fluid img-thumbnail" style="max-width: 150px; height: auto;" onerror="this.onerror=null;this.src='https://placehold.co/150x100/ced4da/6c757d?text=N/A';">
-                                    </td>
-                                    <td class="text-center align-middle"><span class="badge badge-success">{{ $item['tipe'] }}</span></td>
-                                    <td class="text-right align-middle">Rp {{ number_format($item['harga'], 0, ',', '.') }}</td>
-                                    <td class="align-middle">
-                                        {{ Str::limit($item['deskripsi'], 50) }}
-                                    </td>
-                                    <td class="text-center align-middle">
-                                        <a href="#" class="btn btn-sm btn-info" data-toggle="tooltip" title="Lihat Detail"><i class="fas fa-eye"></i></a>
-                                        <a href="#" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit Menu"><i class="fas fa-edit"></i></a>
-                                        <a href="#" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus menu ini?');" data-toggle="tooltip" title="Hapus Menu"><i class="fas fa-trash"></i></a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                            {{-- 
+    Kita langsung melakukan perulangan (looping) pada data asli '$menuMakanan' 
+    yang dikirim dari Controller. Tidak perlu membuat variabel baru.
+--}}
+@foreach ($menuMakanan as $key => $item)
+    <tr>
+        {{-- Kolom untuk menampilkan nomor urut. '$key' dimulai dari 0, jadi kita tambah 1. --}}
+        <td class="text-center align-middle">{{ $key + 1 }}</td>
+
+        {{-- Kolom untuk menampilkan nama menu. --}}
+        <td class="align-middle"><strong>{{ $item['nama'] }}</strong></td>
+
+        {{-- Kolom untuk menampilkan gambar menu. --}}
+        <td class="text-center align-middle">
+            <img src="{{ $item['gambar'] }}" alt="{{ $item['nama'] }}" class="img-fluid img-thumbnail" style="max-width: 150px; height: auto;" 
+                 onerror="this.onerror=null;this.src='https://placehold.co/150x100/ced4da/6c757d?text=N/A';">
+        </td>
+
+        {{-- 
+            Kolom untuk menampilkan tipe menu.
+            Karena semua menu tipenya sama, kita bisa langsung tulis 'Main Course' di sini.
+        --}}
+        <td class="text-center align-middle">
+            <span class="badge badge-success">Main Course</span>
+        </td>
+
+        {{-- Kolom untuk menampilkan harga, diformat agar mudah dibaca. --}}
+        <td class="text-right align-middle">
+            Rp {{ number_format($item['harga'], 0, ',', '.') }}
+        </td>
+
+        {{-- Kolom untuk menampilkan deskripsi, dipotong jika terlalu panjang. --}}
+        <td class="align-middle">
+            {{ Str::limit($item['deskripsi'], 50) }}
+        </td>
+
+        {{-- Kolom untuk tombol-tombol aksi (Lihat, Edit, Hapus). --}}
+        <td class="text-center align-middle">
+            <a href="#" class="btn btn-sm btn-info" data-toggle="tooltip" title="Lihat Detail"><i class="fas fa-eye"></i></a>
+            <a href="#" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit Menu"><i class="fas fa-edit"></i></a>
+            <a href="#" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus menu ini?');" data-toggle="tooltip" title="Hapus Menu"><i class="fas fa-trash"></i></a>
+        </td>
+    </tr>
+@endforeach
+  </tbody>
                     </table>
 
                 </div>
