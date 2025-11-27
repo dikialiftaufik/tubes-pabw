@@ -15,6 +15,10 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\StatusPesananController;
+use App\Http\Controllers\StatusReservasiController;
+
+
 
 Route::get('/', function () {
     return view('landing');
@@ -37,3 +41,7 @@ Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
+Route::get('/kasir/status-pesanan', [StatusPesananController::class, 'index'])
+     ->name('kasir.status-pesanan');
+Route::get('/kasir/status-reservasi', [StatusReservasiController::class, 'index'])
+    ->name('kasir.status-reservasi');
