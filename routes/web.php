@@ -17,6 +17,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\StatusPesananController;
 use App\Http\Controllers\StatusReservasiController;
+use App\Http\Controllers\DashboardKasirController;
+
 
 
 
@@ -45,3 +47,6 @@ Route::get('/kasir/status-pesanan', [StatusPesananController::class, 'index'])
      ->name('kasir.status-pesanan');
 Route::get('/kasir/status-reservasi', [StatusReservasiController::class, 'index'])
     ->name('kasir.status-reservasi');
+Route::get('/kasir/dashboard', [DashboardKasirController::class, 'index'])
+     ->name('kasir.dashboard');
+
