@@ -39,14 +39,25 @@ Route::get('admin/notifications', [NotificationController::class, 'index']);
 Route::get('admin/feedback', [AdminFeedbackController::class, 'index']);
 Route::get('admin/resevations', [ReservationController::class, 'index']);
 Route::get('admin/customers', [CustomerController::class, 'index']);
-Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
-Route::get('/kasir/status-pesanan', [StatusPesananController::class, 'index'])
-     ->name('kasir.status-pesanan');
-Route::get('/kasir/status-reservasi', [StatusReservasiController::class, 'index'])
-    ->name('kasir.status-reservasi');
-Route::get('/kasir/dashboard', [DashboardKasirController::class, 'index'])
-     ->name('kasir.dashboard');
+Route::prefix('kasir')->group(function () {
+
+    // Dashboard Kasir
+    Route::get('/', [DashboardKasirController::class, 'index'])
+        ->name('kasir.dashboard');
+
+    // Kelola Stok
+    Route::get('/stok', [KasirController::class, 'index'])
+        ->name('kasir.stok');
+
+    // Status Pesanan
+    Route::get('/status-pesanan', [StatusPesananController::class, 'index'])
+        ->name('kasir.status-pesanan');
+
+    // Status Reservasi
+    Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])
+        ->name('kasir.status-reservasi');
+});
 

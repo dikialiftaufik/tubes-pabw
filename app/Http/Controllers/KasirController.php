@@ -35,4 +35,27 @@ class KasirController extends Controller
     {
         return redirect()->back()->with('success', 'Stok berhasil diperbarui!');
     }
+
+  
+    public function dashboard()
+    {
+        return view('kasir.dashboard');
+    }
+
+    public function stok()
+    {
+        return view('kasir.stok'); 
+    }
+
+    public function pesanan()
+    {
+        return view('kasir.pesanan');
+    }
+
+    public function reservasi()
+    {
+        return view('kasir.reservasi');
+    }
+
 }
+
