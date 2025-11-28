@@ -56,9 +56,21 @@ Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembaya
 Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
 Route::prefix('kasir')->group(function () {
 
-    // Dashboard Kasir
+    // Dashboard utama
     Route::get('/', [DashboardKasirController::class, 'index'])
         ->name('kasir.dashboard');
+
+    // Halaman profil kasir (ganti foto profil)
+    Route::get('/profil', [DashboardKasirController::class, 'profil'])
+        ->name('kasir.profil');
+
+    // Upload foto
+    Route::post('/upload-foto', [DashboardKasirController::class, 'uploadFoto'])
+        ->name('kasir.upload-foto');
+
+    // Hapus foto
+    Route::post('/hapus-foto', [DashboardKasirController::class, 'hapusFoto'])
+        ->name('kasir.hapus-foto');
 
     // Kelola Stok
     Route::get('/stok', [KasirController::class, 'index'])
@@ -72,4 +84,3 @@ Route::prefix('kasir')->group(function () {
     Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])
         ->name('kasir.status-reservasi');
 });
-
