@@ -47,22 +47,28 @@
 
 <div class="menu-list mt-5">
     <div class="row g-4">
-        @foreach ($menuMakanan as $item)
-            <div class="col-lg-4 col-md-6">
-                <div class="card card-menu">
-                    <img src="{{ $item['gambar'] }}" class="card-img-top" alt="{{ $item['nama'] }}" style="height: 200px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=Gambar';">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-white">{{ $item['nama'] }}</h5>
-                        <p class="card-text text-white-50 flex-grow-1">{{ $item['deskripsi'] }}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <p class="price mb-0">Rp {{ number_format($item['harga'], 0, ',', '.') }}</p>
-                            <a href="#" class="btn btn-order">Pesan</a>
-                        </div>
-                    </div>
+    @foreach($dt_menu as $menu)
+    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="menu-item bg-white rounded shadow-sm p-4">
+            <div class="position-relative overflow-hidden">
+                <img class="img-fluid w-100" src="{{ asset('img/menu/' . $menu->foto) }}" alt="{{ $menu->nama }}">
+                <div class="price-tag position-absolute top-0 start-0 bg-primary text-white px-3 py-1 m-3 rounded-pill">
+                    Rp {{ number_format($menu->harga, 0, ',', '.') }}
                 </div>
             </div>
-        @endforeach
+            <div class="mt-3">
+                <h4 class="mb-2">{{ $menu->nama }}</h4>
+                <p class="text-muted small mb-2"><i class="fa fa-fire text-warning me-1"></i> {{ $menu->kalori }} kkal</p>
+                <p class="text-body mb-3">{{ Str::limit($menu->deskripsi, 80) }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Stok: {{ $menu->stok }}</small>
+                    <a href="#" class="btn btn-sm btn-primary rounded-pill px-3">Pesan</a>
+                </div>
+            </div>
+        </div>
     </div>
+    @endforeach
+</div>
 </div>
 @endsection
 

@@ -348,7 +348,7 @@ return [
     ['header' => 'MASTER DATA'],
     [
         'text' => 'Daftar Menu',
-        'url'  => 'admin/menus',
+        'url'  => 'admin/menu',
         'icon' => 'fas fa-fw fa-book-open',
     ],
     [

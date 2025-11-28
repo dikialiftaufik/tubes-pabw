@@ -37,7 +37,7 @@
     Kita langsung melakukan perulangan (looping) pada data asli '$menuMakanan' 
     yang dikirim dari Controller. Tidak perlu membuat variabel baru.
 --}}
-@foreach ($menuMakanan as $key => $item)
+@foreach ($dt_menu as $key => $item)
     <tr>
         {{-- Kolom untuk menampilkan nomor urut. '$key' dimulai dari 0, jadi kita tambah 1. --}}
         <td class="text-center align-middle">{{ $key + 1 }}</td>

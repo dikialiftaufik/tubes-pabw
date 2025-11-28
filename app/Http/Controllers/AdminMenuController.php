@@ -3,87 +3,95 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Menu;
+use Illuminate\Support\Facades\File;
 
 class AdminMenuController extends Controller
 {
-    /**
-     * Menampilkan halaman manajemen menu di sisi admin.
-     */
     public function index()
     {
-        // Menggunakan data yang sama persis dengan halaman menu user
-        // Nantinya, data ini akan diambil dari database.
-        $menuMakanan = [
-    [
-        'id' => 1,
-        'nama' => 'Nasi Goreng',
-        'deskripsi' => 'Nasi goreng khas Indonesia dengan bumbu rempah dan topping pilihan seperti telur, ayam suwir, dan acar segar.',
-        'harga' => 22000,
-        'gambar' => asset('img/menu/nasi-goreng.jpg'),
-    ],
-    [
-        'id' => 2,
-        'nama' => 'Sate Ayam',
-        'deskripsi' => 'Sate ayam dengan bumbu kacang gurih dan kecap manis khas, disajikan dengan lontong.',
-        'harga' => 25000,
-        'gambar' => asset('img/menu/sate-ayam.jpg'),
-    ],
-    [
-        'id' => 3,
-        'nama' => 'Sate Kambing',
-        'deskripsi' => 'Sate kambing empuk dengan bumbu kecap manis, irisan bawang merah, dan cabai rawit.',
-        'harga' => 35000,
-        'gambar' => asset('img/menu/sate-kambing.jpg'),
-    ],
-    [
-        'id' => 4,
-        'nama' => 'Sate Sapi',
-        'deskripsi' => 'Potongan daging sapi pilihan dibakar dengan bumbu kecap pedas manis, disajikan dengan lontong.',
-        'harga' => 32000,
-        'gambar' => asset('img/menu/sate-sapi.jpg'),
-    ],
-    [
-        'id' => 5,
-        'nama' => 'Tengkleng Kambing',
-        'deskripsi' => 'Tengkleng kambing khas Jawa dengan kuah gurih pedas dari rempah-rempah tradisional.',
-        'harga' => 42000,
-        'gambar' => asset('img/menu/tengkleng-kambing.jpg'),
-    ],
-    [
-        'id' => 6,
-        'nama' => 'Tongseng Ayam',
-        'deskripsi' => 'Tongseng ayam dengan kuah santan kental dan cita rasa rempah khas, disajikan panas.',
-        'harga' => 28000,
-        'gambar' => asset('img/menu/tongseng-ayam.jpg'),
-    ],
-    [
-        'id' => 7,
-        'nama' => 'Tongseng Kambing',
-        'deskripsi' => 'Tongseng kambing dengan potongan daging muda, kuah gurih pedas, dan sayuran segar.',
-        'harga' => 38000,
-        'gambar' => asset('img/menu/tongseng-kambing.jpg'),
-    ],
-    [
-        'id' => 8,
-        'nama' => 'Tongseng Kering Sapi',
-        'deskripsi' => 'Versi kering dari tongseng sapi tanpa kuah, dimasak dengan bumbu manis pedas yang meresap.',
-        'harga' => 33000,
-        'gambar' => asset('img/menu/tongseng-kering-sapi.jpg'),
-    ],
-    [
-        'id' => 9,
-        'nama' => 'Tongseng Sapi',
-        'deskripsi' => 'Tongseng sapi dengan kuah santan gurih dan aroma rempah menggugah selera.',
-        'harga' => 34000,
-        'gambar' => asset('img/menu/tongseng-sapi.jpg'),
-    ],
-];
+        $dt_menu = Menu::all();
+        return view('admin.menu', compact('dt_menu'));
+    }
 
+    public function input()
+    {
+        return view('admin.input_menu'); 
+    }
 
-        // Untuk simulasi paginasi, kita hanya akan menampilkan beberapa data
-        // dan membuat link paginasi statis.
-        // Di aplikasi nyata, ini akan ditangani oleh Paginator Laravel.
+    public function simpan(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048', 
+            'harga' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'bahan' => 'required',
+            'kalori' => 'required|numeric',
+            'deskripsi' => 'required',
+        ]);
 
-        return view('admin.menu', compact('menuMakanan'));
+        $data = $request->all();
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('img/menu'), $filename);
+            
+            $data['foto'] = $filename;
+        }
+
+        Menu::create($data);
+
+        return redirect('/admin/menu')->with('success', 'Menu berhasil ditambahkan');
+    }
+
+    public function edit($id)
+    {
+        $menu = Menu::find($id);
+        return view('admin.edit_menu', compact('menu'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $menu = Menu::find($id);
+
+        $request->validate([
+            'nama' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'harga' => 'required|numeric',
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('foto')) {
+            if ($menu->foto && File::exists(public_path('img/menu/' . $menu->foto))) {
+                File::delete(public_path('img/menu/' . $menu->foto));
+            }
+
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('img/menu'), $filename);
+            $data['foto'] = $filename;
+        } else {
+            unset($data['foto']);
+        }
+
+        $menu->update($data);
+
+        return redirect('/admin/menu')->with('success', 'Menu berhasil diupdate');
+    }
+
+    public function hapus($id)
+    {
+        $menu = Menu::find($id);
+
+        if ($menu->foto && File::exists(public_path('img/menu/' . $menu->foto))) {
+            File::delete(public_path('img/menu/' . $menu->foto));
+        }
+
+        $menu->delete();
+
+        return redirect('/admin/menu');
     }
 }
