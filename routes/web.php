@@ -34,12 +34,12 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index']);
 
 // Route Admin 
 Route::prefix('admin')->group(function () {
-    Route::get('/menu', [AdminMenuController::class, 'index']);
-    Route::get('/menu/input', [AdminMenuController::class, 'input']);
-    Route::post('/menu/simpan', [AdminMenuController::class, 'simpan']); 
-    Route::get('/menu/edit/{id}', [AdminMenuController::class, 'edit']);
-    Route::post('/menu/update/{id}', [AdminMenuController::class, 'update']); 
-    Route::get('/menu/hapus/{id}', [AdminMenuController::class, 'hapus']);
+    Route::get('/menu', [AdminMenuController::class, 'index'])->name('admin.menu.index');
+    Route::get('/menu/input', [AdminMenuController::class, 'input'])->name('admin.menu.input');
+    Route::post('/menu/simpan', [AdminMenuController::class, 'simpan'])->name('admin.menu.simpan');
+    Route::get('/menu/edit/{id}', [AdminMenuController::class, 'edit'])->name('admin.menu.edit');
+    Route::post('/menu/update/{id}', [AdminMenuController::class, 'update'])->name('admin.menu.update');
+    Route::get('/menu/hapus/{id}', [AdminMenuController::class, 'hapus'])->name('admin.menu.hapus');
 });
 
 // Route User 

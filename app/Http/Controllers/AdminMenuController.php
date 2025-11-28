@@ -60,6 +60,9 @@ class AdminMenuController extends Controller
             'nama' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'harga' => 'required|numeric',
+            'bahan' => 'required', 
+            'kalori' => 'required|numeric',
+            'deskripsi' => 'required',
         ]);
 
         $data = $request->all();
@@ -77,9 +80,13 @@ class AdminMenuController extends Controller
             unset($data['foto']);
         }
 
+        if (!$request->has('stok')) {
+            unset($data['stok']); 
+        }
+
         $menu->update($data);
 
-        return redirect('/admin/menu')->with('success', 'Menu berhasil diupdate');
+        return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil diupdate');
     }
 
     public function hapus($id)
