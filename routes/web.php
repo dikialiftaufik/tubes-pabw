@@ -15,6 +15,12 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\StatusPesananController;
+use App\Http\Controllers\StatusReservasiController;
+use App\Http\Controllers\DashboardKasirController;
+
+
+
 
 Route::get('/', function () {
     return view('landing');
@@ -45,7 +51,25 @@ Route::get('admin/notifications', [NotificationController::class, 'index']);
 Route::get('admin/feedback', [AdminFeedbackController::class, 'index']);
 Route::get('admin/resevations', [ReservationController::class, 'index']);
 Route::get('admin/customers', [CustomerController::class, 'index']);
-Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
+Route::prefix('kasir')->group(function () {
+
+    // Dashboard Kasir
+    Route::get('/', [DashboardKasirController::class, 'index'])
+        ->name('kasir.dashboard');
+
+    // Kelola Stok
+    Route::get('/stok', [KasirController::class, 'index'])
+        ->name('kasir.stok');
+
+    // Status Pesanan
+    Route::get('/status-pesanan', [StatusPesananController::class, 'index'])
+        ->name('kasir.status-pesanan');
+
+    // Status Reservasi
+    Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])
+        ->name('kasir.status-reservasi');
+});
+
