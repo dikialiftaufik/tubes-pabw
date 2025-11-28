@@ -18,7 +18,7 @@
 
     <div class="card">
         <div class="card-header">
-            <a href="{{ route('admin.menu.input') }}" class="btn btn-primary">
+            <a href="{{ route('admin.menu.input') }}" class="btn btn-success">
                 <i class="fas fa-plus"></i> Tambah Menu Baru
             </a>
         </div>
