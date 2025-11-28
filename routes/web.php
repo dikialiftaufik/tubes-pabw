@@ -43,7 +43,7 @@ Route::prefix('admin')->group(function () {
 });
 
 // Route User 
-Route::get('/menu', [MenuController::class, 'index']);
+Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 
 Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.form');
 Route::get('admin/reports', [ReportController::class, 'salesReport']);
