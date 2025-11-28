@@ -7,16 +7,36 @@
 
     <h2 class="fw-bold mb-4 text-white">Dashboard Kasir</h2>
 
+    {{-- Notifikasi sukses --}}
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     {{-- Profil Kasir --}}
     <div class="card bg-dark text-white shadow-sm mb-4 border-secondary">
         <div class="card-body d-flex align-items-center">
-            <img src="https://via.placeholder.com/80"
-                 class="rounded-circle me-3" alt="Foto Kasir">
 
-            <div>
+            {{-- Foto Kasir --}}
+            <img src="{{ asset('uploads/kasir/' . $foto) }}"
+                 class="rounded-circle me-3"
+                 alt="Foto Kasir"
+                 style="width: 80px; height: 80px; object-fit: cover;">
+
+            <div class="flex-grow-1">
                 <h5 class="fw-bold mb-1">Kasir 1</h5>
                 <p class="text-secondary mb-0">Role: Kasir</p>
             </div>
+
+            {{-- Form Upload Foto --}}
+            <form action="{{ route('kasir.upload-foto') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="foto" class="form-control form-control-sm mb-2" required>
+                <button type="submit" class="btn btn-sm btn-success">
+                    Upload Foto
+                </button>
+            </form>
         </div>
     </div>
 
