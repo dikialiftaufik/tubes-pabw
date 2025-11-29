@@ -8,33 +8,24 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('reservasi', function (Blueprint $table) {
+        Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-
-            // Jika memakai login user
-            $table->unsignedBigInteger('user_id')->nullable();
-
-            $table->string('nama_pelanggan');
-            $table->string('no_hp', 20);
-            $table->unsignedBigInteger('meja_id')->nullable();
-            $table->date('tanggal');
-            $table->time('waktu');
-            $table->integer('jumlah_orang');
-
-            // status: pending, dikonfirmasi, dibatalkan
-            $table->enum('status', ['pending', 'dikonfirmasi', 'dibatalkan'])->default('pending');
-
-            $table->text('catatan')->nullable();
-
+            $table->unsignedBigInteger('user_id')->nullable(); 
+            $table->string('name');          
+            $table->string('time');          
+            $table->date('date');            
+            $table->integer('people');       
+            $table->text('message')->nullable(); 
+            $table->string('status')->default('Pending'); 
             $table->timestamps();
 
-            // Foreign key
+            // Relasi user
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('reservasi');
+        Schema::dropIfExists('reservations');
     }
 };

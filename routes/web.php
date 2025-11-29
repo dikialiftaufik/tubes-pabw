@@ -71,3 +71,5 @@ Route::prefix('kasir')->group(function () {
 
 });
 
+// reservasi
+Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');

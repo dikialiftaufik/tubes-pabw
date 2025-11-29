@@ -180,33 +180,44 @@
       </div>
       <div class="row justify-content-center">
         <div class="col-md-8">
-          <form action="#" method="POST" class="card shadow-sm p-4 border-0">
+          <form action="{{ route('reservasi.simpan') }}" method="POST" class="card shadow-sm p-4 border-0">
+            @csrf
             <div class="row g-3">
-              <div class="col-md-6">
-                <label for="name" class="form-label">Nama</label>
-                <input type="text" id="name" class="form-control" placeholder="Nama lengkap" required>
-              </div>
-              <div class="col-md-6">
-                <label for="phone" class="form-label">Jam </label>
-                <input type="time" id="time" class="form-control" placeholder="" required>
-              </div>
-              <div class="col-md-6">
-                <label for="date" class="form-label">Tanggal</label>
-                <input type="date" id="date" class="form-control" required>
-              </div>
-              <div class="col-md-6">
-                <label for="people" class="form-label">Jumlah Orang</label>
-                <input type="number" id="people" class="form-control" min="1" required>
-              </div>
-              <div class="col-12">
-                <label for="message" class="form-label">Catatan</label>
-                <textarea id="message" class="form-control" rows="3"></textarea>
-              </div>
-              <div class="col-12 text-center">
-                <button type="submit" class="btn btn-warning mt-3 px-5">Kirim</button>
-              </div>
+
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Nama</label>
+                    <input type="text" id="name" name="name"
+                        class="form-control"
+                        value="{{ Auth::check() ? Auth::user()->name : '' }}"
+                        placeholder="Nama lengkap" required readonly>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="time" class="form-label">Jam</label>
+                    <input type="time" id="time" name="time" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="date" class="form-label">Tanggal</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="people" class="form-label">Jumlah Orang</label>
+                    <input type="number" id="people" name="people" class="form-control" min="1" required>
+                </div>
+
+                <div class="col-12">
+                    <label for="message" class="form-label">Catatan</label>
+                    <textarea id="message" name="message" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-warning mt-3 px-5">Kirim</button>
+                </div>
+
             </div>
-          </form>
+        </form>
         </div>
       </div>
 
