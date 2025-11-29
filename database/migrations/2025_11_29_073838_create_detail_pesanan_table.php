@@ -6,26 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
-    {
-        Schema::create('detail_pesanan', function (Blueprint $table) {
-            $table->id();
+{
+    Schema::create('detail_pesanan', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('pesanan_id');
+        $table->unsignedBigInteger('menu_id');
+        $table->integer('jumlah');
+        $table->integer('subtotal');
+    });
+}
 
-            // Relasi ke pesanan
-            $table->foreignId('pesanan_id')->constrained('pesanan')->onDelete('cascade');
 
-            // Relasi ke menu
-            $table->foreignId('menu_id')->constrained('menu')->onDelete('cascade');
-
-            $table->integer('jumlah')->default(1);
-            $table->integer('subtotal')->default(0);
-
-            $table->timestamps();
-        });
-    }
-
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('detail_pesanan');
+        Schema::dropIfExists('detail_pesanans');
     }
 };

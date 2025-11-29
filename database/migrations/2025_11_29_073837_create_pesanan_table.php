@@ -6,30 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('pesanan', function (Blueprint $table) {
-            $table->id();
+    /**
+     * Run the migrations.
+     */
+   public function up(): void
+{
+    Schema::create('pesanan', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('user_id');
+        $table->date('tanggal');
+        $table->integer('total_harga');
+        $table->string('status')->default('diproses');
+        $table->timestamps();
+    });
+}
 
-            // Relasi ke user (pembeli)
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
-            // Kode pesanan unik
-            $table->string('kode_pesanan')->unique();
-
-            // Total harga
-            $table->integer('total_harga')->default(0);
-
-            // Status pesanan
-            $table->enum('status', ['Belum Dibayar', 'Sudah Dibayar', 'Diproses', 'Selesai'])
-                  ->default('Belum Dibayar');
-
-            $table->timestamps();
-        });
-    }
-
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('pesanan');
+        Schema::dropIfExists('pesanans');
     }
 };

@@ -7,28 +7,32 @@ use Illuminate\Support\Facades\DB;
 
 class FeedbackSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('feedback')->insert([
             [
-                'nama' => 'Budi Santoso',
-                'feedback' => 'Makanannya enak dan pelayanannya cepat.'
+                'user_id' => 1,
+                'menu_id' => 1,
+                'komentar' => 'Makanannya enak dan pelayanannya cepat.',
+                'rating' => 5,
             ],
             [
-                'nama' => 'Siti Aisyah',
-                'feedback' => 'Tempatnya nyaman dan bersih.'
+                'user_id' => 2,
+                'menu_id' => 2,
+                'komentar' => 'Tempatnya nyaman dan bersih.',
+                'rating' => 4,
             ],
             [
-                'nama' => 'Andi Wijaya',
-                'feedback' => 'Sedikit lambat saat jam ramai, tapi tetap bagus.'
+                'user_id' => 3,
+                'menu_id' => 1,
+                'komentar' => 'Sedikit lambat saat jam ramai, tapi tetap bagus.',
+                'rating' => 4,
             ],
             [
-                'nama' => 'Rina Oktavia',
-                'feedback' => 'Meja outdoor sangat nyaman!'
-            ],
-            [
-                'nama' => 'Dedi Pratama',
-                'feedback' => 'Harga terjangkau dan rasa tetap juara.'
+                'user_id' => 4,
+                'menu_id' => 3,
+                'komentar' => 'Meja outdoor sangat nyaman!',
+                'rating' => 5,
             ],
         ]);
     }

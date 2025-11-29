@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\DB;
 
 class NotificationSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        DB::table('notifications')->insert([
+        DB::table('notifikasi')->insert([
             [
                 'user_id' => 1,
                 'pesan' => 'Reservasi Anda telah diterima',
