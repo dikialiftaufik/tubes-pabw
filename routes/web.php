@@ -60,19 +60,14 @@ Route::prefix('kasir')->group(function () {
     Route::get('/', [DashboardKasirController::class, 'index'])->name('kasir.dashboard');
 
     Route::get('/profil', [DashboardKasirController::class, 'profil'])->name('kasir.profil');
-
     Route::post('/upload-foto', [DashboardKasirController::class, 'uploadFoto'])->name('kasir.upload-foto');
-
     Route::post('/hapus-foto', [DashboardKasirController::class, 'hapusFoto'])->name('kasir.hapus-foto');
 
     Route::get('/stok', [KasirController::class, 'index'])->name('kasir.stok');
-    Route::get('/status-pesanan', [StatusPesananController::class, 'index'])->name('kasir.status-pesanan');
-    Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])->name('kasir.status-reservasi');
 
+    // FIX TERPENTING!!
+    Route::get('/status-pesanan', [KasirController::class, 'pesanan'])->name('kasir.status-pesanan');
+    Route::get('/status-reservasi', [KasirController::class, 'reservasi'])->name('kasir.status-reservasi');
 });
 
-// reservasi
-Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');
-Route::get('/admin/reservations', [ReservationController::class, 'index'])
-    ->name('admin.reservations.index');
 

@@ -27,15 +27,32 @@
             </thead>
 
             <tbody>
-                @foreach ($pesananDummy as $index => $p)
+               @foreach ($pesanan as $index => $p)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $p['nama'] }}</td>
-                    <td>{{ $p['menu'] }}</td>
-                    <td>{{ $p['jumlah'] }}</td>
-                    <td class="status {{ $p['status'] == 'Selesai' ? 'text-success' : 'text-warning' }}">
-                        {{ $p['status'] }}
+
+                    {{-- Nama user (relasi), fallback kolom jika tidak ada --}}
+                    <td>{{ $p->user->name ?? 'Tidak diketahui' }}</td>
+
+                    {{-- Nama menu (dari detail pesanan) --}}
+                    <td>
+                        @if($p->detail && $p->detail->count())
+                            @foreach($p->detail as $d)
+                                {{ $d->menu->nama ?? 'Menu' }} x{{ $d->jumlah }}<br>
+                            @endforeach
+                        @else
+                            -
+                        @endif
                     </td>
+
+                    {{-- Jumlah total menu --}}
+                    <td>{{ $p->detail->sum('jumlah') ?? '-' }}</td>
+
+                    {{-- Status --}}
+                    <td class="status {{ $p->status == 'Selesai' ? 'text-success' : 'text-warning' }}">
+                        {{ $p->status }}
+                    </td>
+
                     <td>
                         <button class="btn btn-sm btn-primary" onclick="ubahStatus(this)">
                             Ubah Status
