@@ -30,17 +30,17 @@
                     @foreach ($reservations as $index => $reservation)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $reservation['customer_name'] }}</td>
-                            <td>{{ $reservation['date'] }}</td>
-                            <td>{{ $reservation['time'] }}</td>
-                            <td>{{ $reservation['people'] }}</td>
+                            <td>{{ $reservation->name }}</td>
+                            <td>{{ $reservation->date }}</td>
+                            <td>{{ $reservation->time }}</td>
+                            <td>{{ $reservation->people }}</td>
                             <td>
-                                @if ($reservation['status'] == 'Confirmed')
+                                @if ($reservation->status == 'Confirmed')
                                     <span class="badge bg-success">Confirmed</span>
-                                @elseif ($reservation['status'] == 'Pending')
+                                @elseif ($reservation->status == 'Pending')
                                     <span class="badge bg-warning">Pending</span>
                                 @else
-                                    <span class="badge bg-secondary">{{ $reservation['status'] }}</span>
+                                    <span class="badge bg-secondary">{{ $reservation->status }}</span>
                                 @endif
                             </td>
                             <td>

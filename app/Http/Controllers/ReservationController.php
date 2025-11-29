@@ -8,13 +8,14 @@ use App\Models\Reservation;
 
 class ReservationController extends Controller
 {
+    // Landing 
     public function store(Request $request)
     {
         $request->validate([
             'name'   => 'required',
             'time'   => 'required',
             'date'   => 'required',
-            'people' => 'required|integer|min=1',
+            'people' => 'required|integer|min:1',
             'message'=> 'nullable'
         ]);
 
@@ -29,5 +30,13 @@ class ReservationController extends Controller
         ]);
 
         return redirect('/')->with('success', 'Reservasi Berhasil Dikirim!');
+    }
+
+    // HALAMAN ADMIN 
+    public function index()
+    {
+        $reservations = Reservation::orderBy('date', 'asc')->get();
+
+        return view('admin.reservations', compact('reservations'));
     }
 }

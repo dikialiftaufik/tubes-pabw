@@ -73,3 +73,6 @@ Route::prefix('kasir')->group(function () {
 
 // reservasi
 Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');
+Route::get('/admin/reservations', [ReservationController::class, 'index'])
+    ->name('admin.reservations.index');
+
