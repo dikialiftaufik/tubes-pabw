@@ -16,27 +16,28 @@
 
     {{-- Profil Kasir --}}
     <div class="card bg-dark text-white shadow-sm mb-4 border-secondary">
-        <div class="card-body d-flex align-items-center">
+        <div class="card-body d-flex align-items-center position-relative">
 
             {{-- Foto Kasir --}}
-            <img src="{{ asset('uploads/kasir/' . $foto) }}"
-                 class="rounded-circle me-3"
-                 alt="Foto Kasir"
-                 style="width: 80px; height: 80px; object-fit: cover;">
+            <div class="position-relative">
+                <img src="{{ asset('uploads/kasir/' . $foto) }}"
+                     class="rounded-circle me-3"
+                     alt="Foto Kasir"
+                     style="width: 90px; height: 90px; object-fit: cover;">
 
-            <div class="flex-grow-1">
+                {{-- Tombol edit foto (pindah ke halaman profil) --}}
+                <a href="{{ route('kasir.profil') }}"
+                   class="btn btn-sm btn-warning position-absolute"
+                   style="bottom: 0; right: 0; border-radius: 50%; padding: 6px;">
+                   ✏️
+                </a>
+            </div>
+
+            <div class="flex-grow-1 ms-3">
                 <h5 class="fw-bold mb-1">Kasir 1</h5>
                 <p class="text-secondary mb-0">Role: Kasir</p>
             </div>
 
-            {{-- Form Upload Foto --}}
-            <form action="{{ route('kasir.upload-foto') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="file" name="foto" class="form-control form-control-sm mb-2" required>
-                <button type="submit" class="btn btn-sm btn-success">
-                    Upload Foto
-                </button>
-            </form>
         </div>
     </div>
 
