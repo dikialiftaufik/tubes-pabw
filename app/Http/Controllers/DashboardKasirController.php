@@ -37,7 +37,7 @@ class DashboardKasirController extends Controller
         $file = $request->file('foto');
         $namaFile = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
 
-        // pastikan folder ada: public/uploads/kasir
+        //tempat menyimpan
         if (!is_dir(public_path('uploads/kasir'))) {
             mkdir(public_path('uploads/kasir'), 0755, true);
         }
