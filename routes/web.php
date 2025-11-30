@@ -40,14 +40,19 @@ Route::prefix('admin')->group(function () {
     Route::get('/menu/edit/{id}', [AdminMenuController::class, 'edit'])->name('admin.menu.edit');
     Route::post('/menu/update/{id}', [AdminMenuController::class, 'update'])->name('admin.menu.update');
     Route::get('/menu/hapus/{id}', [AdminMenuController::class, 'hapus'])->name('admin.menu.hapus');
+    
+    Route::get('/reports', [ReportController::class, 'salesReport'])->name('admin.reports.index');
+    Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('admin.reports.export_excel');
+    Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.export_pdf');
 });
+
+
 
 // Route User 
 Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
 
 Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.form');
-Route::get('admin/reports', [ReportController::class, 'salesReport']);
 Route::get('admin/notifications', [NotificationController::class, 'index']);
 Route::get('admin/feedback', [AdminFeedbackController::class, 'index']);
 Route::get('admin/resevations', [ReservationController::class, 'index']);
@@ -60,16 +65,16 @@ Route::prefix('kasir')->group(function () {
     Route::get('/', [DashboardKasirController::class, 'index'])->name('kasir.dashboard');
 
     Route::get('/profil', [DashboardKasirController::class, 'profil'])->name('kasir.profil');
-
     Route::post('/upload-foto', [DashboardKasirController::class, 'uploadFoto'])->name('kasir.upload-foto');
-
     Route::post('/hapus-foto', [DashboardKasirController::class, 'hapusFoto'])->name('kasir.hapus-foto');
 
     Route::get('/stok', [KasirController::class, 'index'])->name('kasir.stok');
-    Route::get('/status-pesanan', [StatusPesananController::class, 'index'])->name('kasir.status-pesanan');
-    Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])->name('kasir.status-reservasi');
 
+    // FIX TERPENTING!!
+    Route::get('/status-pesanan', [KasirController::class, 'pesanan'])->name('kasir.status-pesanan');
+    Route::get('/status-reservasi', [KasirController::class, 'reservasi'])->name('kasir.status-reservasi');
 });
+
 
 // RESERVASI ROUTES
 Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');
@@ -79,4 +84,28 @@ Route::prefix('admin')->group(function () {
     Route::get('/reservations/{id}', [ReservationController::class, 'show']);
     Route::put('/reservations/{id}', [ReservationController::class, 'update']);
     Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']);
+});
+
+// Notification Routes
+Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
+
+// Routes untuk Admin Dashboard
+
+Route::prefix('admin')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('admin.notifications.show');
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
+    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
+});
+
+
+Route::prefix('admin')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::get('/notifications/create', [NotificationController::class, 'create'])->name('admin.notifications.create');
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('admin.notifications.show');
+    Route::get('/notifications/{id}/edit', [NotificationController::class, 'edit'])->name('admin.notifications.edit');
+    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
 });

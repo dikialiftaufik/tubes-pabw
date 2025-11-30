@@ -30,20 +30,20 @@
             </thead>
 
             <tbody>
-                @foreach ($reservasiDummy as $index => $r)
+                @foreach ($reservasi as $index => $r)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $r['nama'] }}</td>
-                    <td>{{ $r['tanggal'] }}</td>
-                    <td>{{ $r['jam'] }}</td>
-                    <td>{{ $r['jumlah_orang'] }}</td>
+                    <td>{{ $r->name }}</td>
+                    <td>{{ $r->date }}</td>
+                    <td>{{ $r->time }}</td>
+                    <td>{{ $r->people }}</td>
 
                     <td class="status 
-                        @if($r['status'] == 'Menunggu Konfirmasi') text-warning
-                        @elseif($r['status'] == 'Dikonfirmasi') text-info
+                        @if($r->status == 'Pending') text-warning
+                        @elseif($r->status == 'Confirmed') text-info
                         @else text-success
                         @endif">
-                        {{ $r['status'] }}
+                        {{ $r->status }}
                     </td>
 
                     <td>
@@ -63,16 +63,16 @@
         const statusElem = button.closest('tr').querySelector('.status');
         let current = statusElem.textContent.trim();
 
-        if (current === 'Menunggu Konfirmasi') {
-            statusElem.textContent = 'Dikonfirmasi';
+        if (current === 'Pending') {
+            statusElem.textContent = 'Confirmed';
             statusElem.className = 'status text-info';
         } 
-        else if (current === 'Dikonfirmasi') {
-            statusElem.textContent = 'Selesai';
+        else if (current === 'Confirmed') {
+            statusElem.textContent = 'Done';
             statusElem.className = 'status text-success';
         }
         else {
-            statusElem.textContent = 'Menunggu Konfirmasi';
+            statusElem.textContent = 'Pending';
             statusElem.className = 'status text-warning';
         }
     }

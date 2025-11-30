@@ -3,38 +3,47 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Notification;
+use App\Models\User;
 
 class NotificationSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('notifications')->insert([
+        // Ambil user pertama (bisa kamu ubah ke user tertentu)
+        $user = User::first();
+
+        // 1. Notifikasi sambutan untuk user login
+        if ($user) {
+            Notification::create([
+                'user_id' => $user->id,
+                'title'   => 'Selamat Datang, ' . $user->name . '!',
+                'message' => 'Hai ' . $user->name . ', senang bertemu lagi! Berikut beberapa info menarik untukmu.',
+            ]);
+        }
+
+        // 2. Notifikasi umum (4 item)
+        $notification = [
             [
-                'user_id' => 1,
-                'pesan' => 'Reservasi Anda telah diterima',
-                'status' => 'unread'
+                'title'   => 'Promo Spesial Bulan Ini',
+                'message' => 'Nikmati promo hemat hingga 50% untuk menu tertentu.',
             ],
             [
-                'user_id' => 2,
-                'pesan' => 'Reservasi Anda dikonfirmasi',
-                'status' => 'read'
+                'title'   => 'Menu Baru Telah Hadir',
+                'message' => 'Kami menambah beberapa menu baru yang wajib kamu coba!',
             ],
             [
-                'user_id' => 3,
-                'pesan' => 'Ada perubahan pada reservasi Anda',
-                'status' => 'unread'
+                'title'   => 'Informasi Reservasi',
+                'message' => 'Sekarang reservasi bisa dilakukan lebih mudah melalui website.',
             ],
             [
-                'user_id' => 1,
-                'pesan' => 'Reservasi dibatalkan',
-                'status' => 'read'
+                'title'   => 'Jam Operasional Update',
+                'message' => 'Restoran kini buka sampai pukul 23.00 WIB mulai minggu depan.',
             ],
-            [
-                'user_id' => 4,
-                'pesan' => 'Terima kasih telah menggunakan layanan kami',
-                'status' => 'unread'
-            ],
-        ]);
+        ];
+
+        foreach ($notification as $notif) {
+            Notification::create($notif);
+        }
     }
 }

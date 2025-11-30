@@ -3,40 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pesanan;   // pastikan file app/Models/Pesanan.php ada
+use App\Models\Reservation;
+
 
 class KasirController extends Controller
 {
-    
     public function index()
     {
-        
+        // tetap pakai dummy menus & pesanan ringan untuk halaman utama kasir (opsional)
         $menus = [
             ['nama' => 'Sate Ayam', 'stok' => 10, 'gambar' => 'img/menu/sate-ayam.jpg'],
-            ['nama' => 'Sate Sapi', 'stok' => 8, 'gambar' => 'img/menu/sate-sapi.jpg'],
-            ['nama' => 'Sate Kambing', 'stok' => 5, 'gambar' => 'img/menu/sate-kambing.jpg'],
-            ['nama' => 'Tongseng Ayam', 'stok' => 7, 'gambar' => 'img/menu/tongseng-ayam.jpg'],
-            ['nama' => 'Tongseng Sapi', 'stok' => 6, 'gambar' => 'img/menu/tongseng-sapi.jpg'],
-            ['nama' => 'Tongseng Kambing', 'stok' => 4, 'gambar' => 'img/menu/tongseng-kambing.jpg'],
+            // ...
         ];
 
-        
         $pesanan = [
             ['nama' => 'Rina', 'menu' => 'Sate Ayam', 'jumlah' => 2, 'status' => 'Sedang Dibuat'],
-            ['nama' => 'Budi', 'menu' => 'Tongseng Sapi', 'jumlah' => 1, 'status' => 'Selesai'],
-            ['nama' => 'Dewi', 'menu' => 'Sate Kambing', 'jumlah' => 3, 'status' => 'Sedang Dibuat'],
+            // dummy untuk tampilan index (boleh dihapus nanti)
         ];
 
-        // Kirim data ke view
         return view('kasir.index', compact('menus', 'pesanan'));
     }
 
-    
     public function updateStok(Request $request)
     {
         return redirect()->back()->with('success', 'Stok berhasil diperbarui!');
     }
 
-  
     public function dashboard()
     {
         return view('kasir.dashboard');
@@ -44,18 +37,26 @@ class KasirController extends Controller
 
     public function stok()
     {
-        return view('kasir.stok'); 
+        return view('kasir.stok');
     }
 
+    // --- method pesanan : ambil data riil dari DB dan kirim ke view ---
     public function pesanan()
     {
-        return view('kasir.pesanan');
+        // ambil semua pesanan beserta relasi user (jika ada)
+        // kalau kamu belum membuat relasi, ini tetap mengambil kolom dari tabel pesanan
+        $pesanan = Pesanan::with('user')->orderBy('created_at', 'desc')->get();
+
+        // kirim ke view kasir.status-pesanan
+        return view('kasir.status-pesanan', compact('pesanan'));
     }
 
-    public function reservasi()
-    {
-        return view('kasir.reservasi');
-    }
+    // --- method reservasi : ambil data riil dari DB dan kirim ke view ---
+   public function reservasi()
+{
+    $reservasi = Reservation::orderBy('created_at', 'desc')->get();
 
+    return view('kasir.status-reservasi', compact('reservasi'));
 }
 
+}
