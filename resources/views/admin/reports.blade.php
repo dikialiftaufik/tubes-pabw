@@ -9,8 +9,7 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Data Transaksi Selesai</h3>
-            <div class="card-tools">
+            <div class="card-title">
                 <a href="{{ route('admin.reports.export_excel') }}" class="btn btn-success btn-sm" target="_blank">
                     <i class="fas fa-file-excel"></i> Export Excel
                 </a>

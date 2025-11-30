@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Dashboard</h1>
+    <h1 class="m-0 text-dark">Dashboard Monitoring</h1>
 @stop
 
 @section('content')
@@ -14,12 +14,11 @@
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3>Rp {{ number_format($statistik['totalPendapatan'], 0, ',', '.') }}</h3>
-                    <p>Total Pendapatan</p>
+                    <p>Total Pendapatan (Selesai)</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-dollar-sign"></i>
+                    <i class="fas fa-money-bill-wave"></i>
                 </div>
-                <a href="#" class="small-box-footer">Info lebih lanjut <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-6">
@@ -27,12 +26,11 @@
             <div class="small-box bg-primary">
                 <div class="inner">
                     <h3>{{ $statistik['totalPesanan'] }}</h3>
-                    <p>Total Pesanan</p>
+                    <p>Total Transaksi</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-utensils"></i>
+                    <i class="fas fa-shopping-basket"></i>
                 </div>
-                <a href="#" class="small-box-footer">Info lebih lanjut <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-6">
@@ -43,9 +41,8 @@
                     <p>Total Reservasi</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fas fa-calendar-alt"></i>
                 </div>
-                <a href="#" class="small-box-footer">Info lebih lanjut <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-6">
@@ -56,42 +53,45 @@
                     <p>Pelanggan Baru (Bulan Ini)</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-user-plus"></i>
+                    <i class="fas fa-users"></i>
                 </div>
-                <a href="#" class="small-box-footer">Info lebih lanjut <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>
 
     {{-- Baris untuk Grafik --}}
     <div class="row">
+        {{-- Grafik Line: Pendapatan --}}
         <div class="col-lg-7">
-            <div class="card">
+            <div class="card card-success card-outline">
                 <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-chart-line"></i> Grafik Pendapatan (7 Hari Terakhir)</h3>
+                    <h3 class="card-title"><i class="fas fa-chart-line mr-1"></i> Grafik Pendapatan (7 Hari Terakhir)</h3>
                 </div>
                 <div class="card-body">
-                    <canvas id="revenueChart"></canvas>
+                    <canvas id="revenueChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                 </div>
             </div>
         </div>
+
+        {{-- Grafik Pie: Menu Terlaris --}}
         <div class="col-lg-5">
-            <div class="card">
+            <div class="card card-danger card-outline">
                 <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-chart-pie"></i> Menu Terlaris (Minggu Ini)</h3>
+                    <h3 class="card-title"><i class="fas fa-chart-pie mr-1"></i> Top 5 Menu Terlaris</h3>
                 </div>
                 <div class="card-body">
-                    <canvas id="topMenusChart"></canvas>
+                    <canvas id="topMenusChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 @stop
 
-@push('js')
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     $(function () {
-        // --- SCRIPT UNTUK GRAFIK PENDAPATAN (TETAP SAMA) ---
+        // --- 1. CONFIG LINE CHART (PENDAPATAN) ---
         const revenueLabels = @json($labelsPendapatan);
         const revenueData = @json($dataPendapatan);
 
@@ -100,14 +100,15 @@
             labels: revenueLabels,
             datasets: [{
                 label: 'Pendapatan',
-                backgroundColor: 'rgba(40, 167, 69, 0.2)',
-                borderColor: 'rgba(40, 167, 69, 1)',
-                pointRadius: 5,
-                pointColor: '#28a745',
-                pointStrokeColor: 'rgba(40, 167, 69, 1)',
+                backgroundColor: 'rgba(60, 141, 188, 0.1)',
+                borderColor: 'rgba(60, 141, 188, 0.8)',
+                pointRadius: 4,
+                pointColor: '#3b8bba',
+                pointStrokeColor: 'rgba(60,141,188,1)',
                 pointHighlightFill: '#fff',
-                pointHighlightStroke: 'rgba(40, 167, 69, 1)',
-                data: revenueData
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data: revenueData,
+                fill: true
             }]
         };
 
@@ -118,9 +119,10 @@
             scales: {
                 xAxes: [{ gridLines: { display: false } }],
                 yAxes: [{
+                    gridLines: { display: true },
                     ticks: {
                         beginAtZero: true,
-                        callback: function(value, index, values) {
+                        callback: function(value) {
                             return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
                         }
                     }
@@ -135,22 +137,31 @@
             }
         };
 
+        // Render Line Chart
         new Chart(revenueChartCanvas, {
             type: 'line',
             data: revenueChartData,
             options: revenueChartOptions
         });
 
-        // --- SCRIPT BARU UNTUK GRAFIK MENU TERLARIS (PIE CHART) ---
+        // --- 2. CONFIG PIE CHART (MENU TERLARIS) ---
         const topMenusLabels = @json($menuTerlaris['labels']);
         const topMenusData = @json($menuTerlaris['data']);
+
+        // Cek jika data kosong agar chart tidak error
+        if(topMenusData.length === 0) {
+            topMenusLabels.push('Belum ada data');
+            topMenusData.push(1);
+        }
 
         var topMenusChartCanvas = $('#topMenusChart').get(0).getContext('2d');
         var topMenusChartData = {
             labels: topMenusLabels,
             datasets: [{
                 data: topMenusData,
-                backgroundColor: ['#d9534f', '#5cb85c', '#f0ad4e', '#5bc0de', '#337ab7'],
+                backgroundColor: [
+                    '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'
+                ],
             }]
         };
 
@@ -175,12 +186,12 @@
             }
         };
 
+        // Render Pie Chart
         new Chart(topMenusChartCanvas, {
-            type: 'pie', // Mengubah tipe grafik menjadi 'pie'
+            type: 'doughnut', // Menggunakan Doughnut agar lebih modern, ganti 'pie' jika ingin full
             data: topMenusChartData,
             options: topMenusChartOptions
         });
     });
 </script>
-@endpush
-
+@stop
