@@ -6,27 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('notifikasi', function (Blueprint $table) {
-            $table->id();
+    public function up()
+{
+    Schema::create('notifications', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('user_id');
+        $table->string('title')->nullable();
+        $table->text('message')->nullable();
+        $table->boolean('is_read')->default(0);
+        $table->timestamps();
 
-            // Relasi ke users
-            $table->foreignId('user_id')
-                  ->nullable()
-                  ->constrained('users')
-                  ->onDelete('set null');
+        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+    });
+}
 
-            // Kolom sesuai seeder
-            $table->string('pesan');   // WAJIB
-            $table->string('status')->default('unread');
 
-            $table->timestamps();
-        });
-    }
 
     public function down(): void
     {
-        Schema::dropIfExists('notifikasi');
+        Schema::dropIfExists('notification');
     }
 };

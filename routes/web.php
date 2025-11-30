@@ -81,3 +81,36 @@ Route::prefix('kasir')->group(function () {
 
 
 
+// RESERVASI ROUTES
+Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');
+
+Route::prefix('admin')->group(function () {
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::get('/reservations/{id}', [ReservationController::class, 'show']);
+    Route::put('/reservations/{id}', [ReservationController::class, 'update']);
+    Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']);
+});
+
+// Notification Routes
+Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
+
+// Routes untuk Admin Dashboard
+
+Route::prefix('admin')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('admin.notifications.show');
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
+    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
+});
+
+
+Route::prefix('admin')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::get('/notifications/create', [NotificationController::class, 'create'])->name('admin.notifications.create');
+    Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('admin.notifications.show');
+    Route::get('/notifications/{id}/edit', [NotificationController::class, 'edit'])->name('admin.notifications.edit');
+    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
+});
