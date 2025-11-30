@@ -40,14 +40,19 @@ Route::prefix('admin')->group(function () {
     Route::get('/menu/edit/{id}', [AdminMenuController::class, 'edit'])->name('admin.menu.edit');
     Route::post('/menu/update/{id}', [AdminMenuController::class, 'update'])->name('admin.menu.update');
     Route::get('/menu/hapus/{id}', [AdminMenuController::class, 'hapus'])->name('admin.menu.hapus');
+    
+    Route::get('/reports', [ReportController::class, 'salesReport'])->name('admin.reports.index');
+    Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('admin.reports.export_excel');
+    Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.export_pdf');
 });
+
+
 
 // Route User 
 Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
 
 Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.form');
-Route::get('admin/reports', [ReportController::class, 'salesReport']);
 Route::get('admin/notifications', [NotificationController::class, 'index']);
 Route::get('admin/feedback', [AdminFeedbackController::class, 'index']);
 Route::get('admin/resevations', [ReservationController::class, 'index']);

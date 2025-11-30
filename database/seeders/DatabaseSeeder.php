@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             DetailPesananSeeder::class,
             NotificationSeeder::class,
             FeedbackSeeder::class,
-            UserSeeder::class,
            
         ]);
     }
