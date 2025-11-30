@@ -23,7 +23,7 @@ class Pesanan extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // GANTI INI
+    
     public function detail()
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');
