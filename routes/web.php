@@ -60,6 +60,8 @@ Route::get('admin/customers', [CustomerController::class, 'index']);
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
+
+//Kasir
 Route::prefix('kasir')->group(function () {
 
     Route::get('/', [DashboardKasirController::class, 'index'])->name('kasir.dashboard');
@@ -70,9 +72,12 @@ Route::prefix('kasir')->group(function () {
 
     Route::get('/stok', [KasirController::class, 'index'])->name('kasir.stok');
 
-    // FIX TERPENTING!!
+ 
     Route::get('/status-pesanan', [KasirController::class, 'pesanan'])->name('kasir.status-pesanan');
     Route::get('/status-reservasi', [KasirController::class, 'reservasi'])->name('kasir.status-reservasi');
 });
+    Route::post('/kasir/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])
+    ->name('kasir.reservasi.cancel');
+
 
 
