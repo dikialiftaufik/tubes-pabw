@@ -11,12 +11,11 @@ class Pesanan extends Model
 
     protected $table = 'pesanan';
     
-    // Sesuaikan dengan kolom di database Anda
     protected $fillable = [
         'user_id', 
         'tanggal', 
         'total_harga', 
-        'status' // Kolom yang benar adalah 'status'
+        'status'
     ];
 
     public function user()
@@ -24,7 +23,8 @@ class Pesanan extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function detailPesanan()
+    // GANTI INI
+    public function detail()
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');
     }

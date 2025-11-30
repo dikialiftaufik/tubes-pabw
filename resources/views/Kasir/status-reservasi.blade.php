@@ -15,7 +15,6 @@
     </div>
 
     <div class="card-body">
-
         <table class="table table-dark table-striped align-middle text-center">
             <thead>
                 <tr>
@@ -38,42 +37,56 @@
                     <td>{{ $r->time }}</td>
                     <td>{{ $r->people }}</td>
 
-                    <td class="status 
-                        @if($r->status == 'Pending') text-warning
-                        @elseif($r->status == 'Confirmed') text-info
-                        @else text-success
+                    {{-- PERBAIKAN: Kolom Status dijadikan satu logic saja --}}
+                    <td class="status fw-bold 
+                        @if(strtolower($r->status) == 'pending') text-warning
+                        @elseif(strtolower($r->status) == 'confirmed') text-info
+                        @elseif(strtolower($r->status) == 'done') text-success
+                        @elseif(strtolower($r->status) == 'cancelled') text-secondary
                         @endif">
                         {{ $r->status }}
                     </td>
 
+                    {{-- PERBAIKAN: Kolom Aksi dijadikan satu <td> berisi Cancel & Ubah Status --}}
                     <td>
-                        <button class="btn btn-sm btn-primary me-1" onclick="ubahStatus(this)">Ubah Status</button>
+                        {{-- Tombol Cancel (Form) --}}
+                        <form action="{{ route('kasir.reservasi.cancel', $r->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button class="btn btn-sm btn-danger me-1"
+                                onclick="return confirm('Yakin batalkan reservasi ini?')">
+                                Cancel
+                            </button>
+                        </form>
+
+                        {{-- Tombol Ubah Status (Satu saja) --}}
+                        <button class="btn btn-sm btn-primary" onclick="ubahStatus(this)">
+                            Ubah Status
+                        </button>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
-
         </table>
-
     </div>
 </div>
 
 <script>
+    // Script JS tetap sama
     function ubahStatus(button) {
         const statusElem = button.closest('tr').querySelector('.status');
-        let current = statusElem.textContent.trim();
+        let current = statusElem.textContent.trim().toLowerCase(); // Pakai toLowerCase agar tidak sensitif huruf besar/kecil
 
-        if (current === 'Pending') {
+        if (current === 'pending') {
             statusElem.textContent = 'Confirmed';
-            statusElem.className = 'status text-info';
+            statusElem.className = 'status fw-bold text-info';
         } 
-        else if (current === 'Confirmed') {
+        else if (current === 'confirmed') {
             statusElem.textContent = 'Done';
-            statusElem.className = 'status text-success';
+            statusElem.className = 'status fw-bold text-success';
         }
         else {
             statusElem.textContent = 'Pending';
-            statusElem.className = 'status text-warning';
+            statusElem.className = 'status fw-bold text-warning';
         }
     }
 </script>
