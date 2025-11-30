@@ -2,14 +2,13 @@
 
 namespace App\Exports;
 
-use App\Models\Pesanan;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-
+// ---------------------------------------------
 
 class SalesReportExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
@@ -30,7 +29,6 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
 
     public function headings(): array
     {
-        // Kolom Metode dan Status DIHAPUS sesuai permintaan
         return [
             'Tanggal',
             'Invoice',
@@ -43,6 +41,7 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function map($pesanan): array
     {
         // Format Item: "Nasi Goreng (2)"
+        // Menggunakan detail_pesanan yang sudah di-load di Controller
         $items = $pesanan->detailPesanan->map(function($detail) {
             return ($detail->menu->nama ?? 'Menu Terhapus') . ' (x' . $detail->jumlah . ')';
         })->implode(', ');
@@ -58,6 +57,7 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
 
     public function styles(Worksheet $sheet)
     {
+        // Membuat baris header (baris 1) menjadi tebal (Bold)
         return [
             1 => ['font' => ['bold' => true]],
         ];
