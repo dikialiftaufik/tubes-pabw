@@ -72,12 +72,20 @@ Route::prefix('kasir')->group(function () {
 
     Route::get('/stok', [KasirController::class, 'index'])->name('kasir.stok');
 
- 
+    // STATUS PESANAN
     Route::get('/status-pesanan', [KasirController::class, 'pesanan'])->name('kasir.status-pesanan');
-    Route::get('/status-reservasi', [KasirController::class, 'reservasi'])->name('kasir.status-reservasi');
+
+    // STATUS RESERVASI (PAKAI StatusReservasiController)
+    Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])
+        ->name('kasir.status-reservasi');
+
+    Route::post('/status-reservasi/update/{id}', [StatusReservasiController::class, 'updateStatus'])
+        ->name('kasir.reservasi.update');
+
+    Route::post('/status-reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])
+        ->name('kasir.reservasi.cancel');
 });
-    Route::post('/kasir/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])
-    ->name('kasir.reservasi.cancel');
+
 
 
 
