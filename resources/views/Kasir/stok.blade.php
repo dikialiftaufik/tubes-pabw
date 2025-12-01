@@ -22,7 +22,7 @@
         <div class="card bg-dark text-white shadow-sm h-100 border-secondary">
             
             {{-- gambar menu --}}
-            <img src="{{ asset($menu->gambar) }}" 
+            <img src="{{ asset('img/menu/' . $menu->foto) }}" 
                  class="card-img-top rounded-top" 
                  style="height: 200px; object-fit: cover;">
             
@@ -31,7 +31,10 @@
                 <p class="text-secondary">Rp {{ number_format($menu->harga,0,',','.') }}</p>
 
                 {{-- Form Update Stok --}}
-                <form action="{{ route('kasir.update-stok', $menu->id) }}" method="POST" class="d-flex justify-content-center mt-3">
+                <form action="{{ route('kasir.update-stok', $menu->id) }}" 
+                      method="POST" 
+                      class="d-flex justify-content-center mt-3">
+
                     @csrf
 
                     <input type="number" 
@@ -40,9 +43,8 @@
                            value="{{ $menu->stok }}" 
                            min="0" required>
 
-                    <button class="btn btn-success ms-2">
-                        Update
-                    </button>
+                    <button class="btn btn-success ms-2">Update</button>
+
                 </form>
 
             </div>

@@ -25,7 +25,7 @@
                      alt="Foto Kasir"
                      style="width: 90px; height: 90px; object-fit: cover;">
 
-                {{-- Tombol edit foto (pindah ke halaman profil) --}}
+                {{-- Tombol edit foto --}}
                 <a href="{{ route('kasir.profil') }}"
                    class="btn btn-sm btn-warning position-absolute"
                    style="bottom: 0; right: 0; border-radius: 50%; padding: 6px;">
@@ -44,26 +44,29 @@
     {{-- Ringkasan --}}
     <div class="row g-4">
 
+        {{-- STOK MENU --}}
         <div class="col-md-4">
             <div class="card bg-dark text-white text-center p-3 shadow-sm border-secondary">
                 <h4 class="fw-bold">Stok Menu</h4>
-                <p class="fs-5 text-info">6 menu</p>
+                <p class="fs-5 text-info">{{ $stokMenu }} menu</p>
                 <a href="{{ route('kasir.stok') }}" class="btn btn-outline-light">Kelola</a>
             </div>
         </div>
 
+        {{-- STATUS PESANAN --}}
         <div class="col-md-4">
             <div class="card bg-dark text-white text-center p-3 shadow-sm border-secondary">
                 <h4 class="fw-bold">Status Pesanan</h4>
-                <p class="fs-5 text-warning">3 pesanan masuk</p>
+                <p class="fs-5 text-warning">{{ $pesananMasuk }} pesanan masuk</p>
                 <a href="{{ route('kasir.status-pesanan') }}" class="btn btn-outline-light">Lihat</a>
             </div>
         </div>
 
+        {{-- STATUS RESERVASI --}}
         <div class="col-md-4">
             <div class="card bg-dark text-white text-center p-3 shadow-sm border-secondary">
                 <h4 class="fw-bold">Status Reservasi</h4>
-                <p class="fs-5 text-success">2 reservasi</p>
+                <p class="fs-5 text-success">{{ $reservasiMasuk }} reservasi</p>
                 <a href="{{ route('kasir.status-reservasi') }}" class="btn btn-outline-light">Lihat</a>
             </div>
         </div>

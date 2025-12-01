@@ -10,11 +10,11 @@ class Pesanan extends Model
     use HasFactory;
 
     protected $table = 'pesanan';
-    
+
     protected $fillable = [
-        'user_id', 
-        'tanggal', 
-        'total_harga', 
+        'user_id',
+        'tanggal',
+        'total_harga',
         'status'
     ];
 
@@ -23,7 +23,7 @@ class Pesanan extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    
+    // RELASI BENAR → digunakan oleh blade sebagai $p->detail
     public function detail()
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');

@@ -17,7 +17,6 @@ class StatusReservasiController extends Controller
     {
         $reservasi = Reservation::findOrFail($id);
 
-        // Logika otomatis
         if ($reservasi->status === 'pending') {
             $reservasi->status = 'confirmed';
         } elseif ($reservasi->status === 'confirmed') {
