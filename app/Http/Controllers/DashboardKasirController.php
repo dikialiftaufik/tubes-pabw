@@ -3,24 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Menu;
+use App\Models\Pesanan;
+use App\Models\Reservation;
 
 class DashboardKasirController extends Controller
 {
     // helper: ambil nama file foto dari session, atau default.png jika belum ada
     protected function getFotoFromSession()
     {
-        // gunakan 'default.png' sebagai fallback; buat file default.png di public/uploads/kasir/ (atau sesuaikan)
         return session('foto_kasir', 'default.png');
     }
 
-    // tampilkan dashboard (kirim $foto ke view)
+    // DASHBOARD KASIR
     public function index()
     {
         $foto = $this->getFotoFromSession();
-        return view('kasir.dashboard', compact('foto'));
+
+        // === DATA ASLI DARI DATABASE ===
+        $stokMenu = Menu::count();
+        $pesananMasuk = Pesanan::count();
+        $reservasiMasuk = Reservation::count();
+
+        return view('kasir.dashboard', compact(
+            'foto',
+            'stokMenu',
+            'pesananMasuk',
+            'reservasiMasuk'
+        ));
     }
 
-    // halaman profil (form upload & hapus)
+    // halaman profil kasir
     public function profil()
     {
         $foto = $this->getFotoFromSession();
@@ -37,37 +50,36 @@ class DashboardKasirController extends Controller
         $file = $request->file('foto');
         $namaFile = time() . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
 
-        //tempat menyimpan
+        // buat folder kalau belum ada
         if (!is_dir(public_path('uploads/kasir'))) {
             mkdir(public_path('uploads/kasir'), 0755, true);
         }
 
         // hapus foto lama jika bukan default
-        $old = session('foto_kasir', null);
+        $old = session('foto_kasir');
         if ($old && $old !== 'default.png') {
             $oldPath = public_path('uploads/kasir/' . $old);
             if (file_exists($oldPath)) unlink($oldPath);
         }
 
-        // simpan file baru
+        // simpan foto baru
         $file->move(public_path('uploads/kasir'), $namaFile);
 
-        // simpan nama file di session (sementara sebelum DB)
         session(['foto_kasir' => $namaFile]);
 
         return redirect()->route('kasir.profil')->with('success', 'Foto profil berhasil diunggah!');
     }
 
-    // hapus foto profil (kembalikan ke default)
+    // hapus foto
     public function hapusFoto()
     {
         $old = session('foto_kasir', null);
+
         if ($old && $old !== 'default.png') {
             $oldPath = public_path('uploads/kasir/' . $old);
             if (file_exists($oldPath)) unlink($oldPath);
         }
 
-        // set kembali ke default
         session(['foto_kasir' => 'default.png']);
 
         return redirect()->route('kasir.profil')->with('success', 'Foto profil berhasil dihapus!');

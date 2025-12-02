@@ -61,24 +61,46 @@ Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembaya
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
 Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
 
-//Kasir
+
+// ROUTE KASIR
 Route::prefix('kasir')->group(function () {
 
+    // Dashboard
     Route::get('/', [DashboardKasirController::class, 'index'])->name('kasir.dashboard');
 
+
+    // PROFIL KASIR (upload & hapus foto)
+    
     Route::get('/profil', [DashboardKasirController::class, 'profil'])->name('kasir.profil');
     Route::post('/upload-foto', [DashboardKasirController::class, 'uploadFoto'])->name('kasir.upload-foto');
     Route::post('/hapus-foto', [DashboardKasirController::class, 'hapusFoto'])->name('kasir.hapus-foto');
 
-    Route::get('/stok', [KasirController::class, 'index'])->name('kasir.stok');
+    
+    // STOK MENU
+    
+    Route::get('/stok', [KasirController::class, 'stok'])->name('kasir.stok');
+    Route::post('/stok/update/{id}', [KasirController::class, 'updateStok'])->name('kasir.update-stok');
 
- 
-    Route::get('/status-pesanan', [KasirController::class, 'pesanan'])->name('kasir.status-pesanan');
-    Route::get('/status-reservasi', [KasirController::class, 'reservasi'])->name('kasir.status-reservasi');
+    
+    // STATUS PESANAN
+    
+    Route::get('/status-pesanan', [StatusPesananController::class, 'index'])
+        ->name('kasir.status-pesanan');
+
+   
+    // STATUS RESERVASI
+    
+    Route::get('/status-reservasi', [StatusReservasiController::class, 'index'])
+        ->name('kasir.status-reservasi');
+
+    // Update status reservasi (pending → confirmed → done)
+    Route::post('/reservasi/update/{id}', [StatusReservasiController::class, 'updateStatus'])
+        ->name('kasir.reservasi.update');
+
+    // Cancel reservasi
+    Route::post('/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])
+        ->name('kasir.reservasi.cancel');
 });
-    Route::post('/kasir/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])
-    ->name('kasir.reservasi.cancel');
-
 
 
 // RESERVASI ROUTES
