@@ -102,7 +102,7 @@ class NotificationController extends Controller
      */
     public function create()
     {
-        return view('admin.notifications.create');
+        return view('admin.notifications');
     }
 
     /**
@@ -157,7 +157,7 @@ class NotificationController extends Controller
                 return response()->json($notification);
             }
             
-            return view('admin.notifications.show', compact('notification'));
+            return view('admin.notifications', compact('notification'));
         } catch (\Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json(['error' => 'Notifikasi tidak ditemukan'], 404);
@@ -180,7 +180,7 @@ class NotificationController extends Controller
                 return response()->json($notification);
             }
             
-            return view('admin.notifications.edit', compact('notification'));
+            return view('admin.notifications', compact('notification'));
         } catch (\Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json(['error' => 'Notifikasi tidak ditemukan'], 404);
