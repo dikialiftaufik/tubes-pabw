@@ -13,7 +13,6 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. DATA SMALL BOX (STATISTIK UTAMA)
         
         // Hitung total pendapatan (Hanya dari pesanan yang statusnya 'Selesai')
         $totalPendapatan = Pesanan::where('status', 'Selesai')->sum('total_harga');
@@ -22,7 +21,6 @@ class DashboardController extends Controller
         $totalPesanan = Pesanan::count();
 
         // Hitung total reservasi (Dari tabel reservations)
-        // Menggunakan DB table jika Model Reservation belum dibuat, atau sesuaikan dengan Model Anda
         $totalReservasi = DB::table('reservations')->count(); 
 
         // Hitung pelanggan baru (User dengan role pembeli yang daftar bulan ini)
@@ -38,7 +36,6 @@ class DashboardController extends Controller
             'pelangganBaru' => $pelangganBaru,
         ];
 
-        // 2. DATA GRAFIK PENDAPATAN (7 HARI TERAKHIR)
         $labelsPendapatan = [];
         $dataPendapatan = [];
 
@@ -57,7 +54,6 @@ class DashboardController extends Controller
             $dataPendapatan[] = $income;
         }
 
-        // 3. DATA GRAFIK MENU TERLARIS (PIE CHART)
         // Query menggunakan Join antara detail_pesanan dan menu
         $topMenus = DB::table('detail_pesanan')
             ->join('menu', 'detail_pesanan.menu_id', '=', 'menu.id')

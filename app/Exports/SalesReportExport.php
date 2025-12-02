@@ -40,8 +40,6 @@ class SalesReportExport implements FromCollection, WithHeadings, WithMapping, Sh
 
     public function map($pesanan): array
     {
-        // Format Item: "Nasi Goreng (2)"
-        // Menggunakan detail_pesanan yang sudah di-load di Controller
         $items = $pesanan->detailPesanan->map(function($detail) {
             return ($detail->menu->nama ?? 'Menu Terhapus') . ' (x' . $detail->jumlah . ')';
         })->implode(', ');

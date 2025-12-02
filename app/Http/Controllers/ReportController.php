@@ -14,7 +14,6 @@ class ReportController extends Controller
     private function getSalesData()
     {
         return Pesanan::with(['user', 'detailPesanan.menu'])
-            // PERBAIKAN FATAL: Menggunakan kolom 'status' dan value 'Selesai' (sesuai DB dump)
             ->where('status', 'Selesai') 
             ->orderBy('created_at', 'desc')
             ->get();
@@ -28,7 +27,6 @@ class ReportController extends Controller
 
     public function exportExcel()
     {
-        // Mengirim data hasil query yang sudah benar ke Class Export
         $data = $this->getSalesData();
         return Excel::download(new SalesReportExport($data), 'laporan_penjualan_'.date('Y-m-d').'.xlsx');
     }
