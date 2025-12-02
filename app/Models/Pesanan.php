@@ -23,8 +23,9 @@ class Pesanan extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // RELASI BENAR → digunakan oleh blade sebagai $p->detail
-    public function detail()
+    // PERBAIKAN: Ubah nama method dari 'detail' menjadi 'detailPesanan'
+    // Ini agar cocok dengan controller: Pesanan::with('detailPesanan')
+    public function detailPesanan() 
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id');
     }
