@@ -17,6 +17,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\StatusPesananController;
 use App\Http\Controllers\StatusReservasiController;
+use App\Http\Controllers\FeeddbackController;
 use App\Http\Controllers\DashboardKasirController;
 
 
@@ -116,17 +117,8 @@ Route::prefix('admin')->group(function () {
 // Notification Routes
 Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
 
-// Routes untuk Admin Dashboard
 
-Route::prefix('admin')->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
-    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('admin.notifications.show');
-    Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
-    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
-    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
-});
-
-
+// Routes untuk Admin Dashboard Notification
 Route::prefix('admin')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::get('/notifications/create', [NotificationController::class, 'create'])->name('admin.notifications.create');
@@ -136,3 +128,13 @@ Route::prefix('admin')->group(function () {
     Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
 });
+
+
+// Routes untuk Feedback
+Route::get('/feedback', [FeeddbackController::class, 'index'])->name('feedback.index');
+Route::post('/feedback', [FeeddbackController::class, 'store'])->name('feedback.store');
+
+
+
+
+

@@ -99,7 +99,7 @@
                 <li class="nav-item"><a class="nav-link" href="#reservation">Lokasi</a></li>
 
                 <li class="nav-item me-3">
-                    <a class="nav-link {{ request()->routeIs('feedback.form') ? 'active' : '' }}" href="{{ route('feedback.form') }}">Feedback</a>
+                    <a class="nav-link {{ request()->routeIs('feedback.index') ? 'active' : '' }}" href="{{ route('feedback.index') }}">Feedback</a>
                 </li>
 
                 <li class="nav-item d-none d-lg-block border-end border-secondary mx-2" style="height:20px;"></li>
