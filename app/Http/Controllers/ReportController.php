@@ -10,7 +10,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
-    // Method Private untuk mengambil data yang SAMA untuk View, Excel, dan PDF
     private function getSalesData()
     {
         return Pesanan::with(['user', 'detailPesanan.menu'])

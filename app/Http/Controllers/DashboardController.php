@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Pesanan;
 use App\Models\User;
-use App\Models\Reservation; // Pastikan Model Reservation ada (sesuai tabel reservations)
+use App\Models\Reservation;
 
 class DashboardController extends Controller
 {
@@ -43,12 +43,11 @@ class DashboardController extends Controller
             // Ambil tanggal mundur dari hari ini
             $date = Carbon::now()->subDays($i);
             
-            // Format label grafik (misal: 19 Oct)
             $labelsPendapatan[] = $date->format('d M');
 
             // Query Sum Total Harga per tanggal tersebut
             $income = Pesanan::whereDate('tanggal', $date->format('Y-m-d'))
-                ->where('status', 'Selesai') // Hanya hitung yang selesai
+                ->where('status', 'Selesai') 
                 ->sum('total_harga');
             
             $dataPendapatan[] = $income;
