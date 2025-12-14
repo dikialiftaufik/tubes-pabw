@@ -15,20 +15,21 @@ class RegisterController extends Controller
     | Register Controller
     |--------------------------------------------------------------------------
     |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
+    | Controller ini menangani pendaftaran user baru serta validasinya.
+    | Secara default, controller ini menggunakan trait untuk menyediakan
+    | fungsionalitas ini tanpa perlu repot menulis kode dari awal.
     |
     */
 
     use RegistersUsers;
 
     /**
-     * Where to redirect users after registration.
+     * Setelah register berhasil, user akan diarahkan ke sini.
+     * Kita set ke halaman '/' (Landing Page) atau '/menu'.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/menu'; 
 
     /**
      * Create a new controller instance.
@@ -63,10 +64,12 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        // MODIFIKASI: Menambahkan 'role' => 'pembeli' secara otomatis
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => 'pembeli', // <-- Ini kuncinya agar otomatis jadi pembeli
         ]);
     }
 }

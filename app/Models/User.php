@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',          
+        'foto_profile',  
     ];
 
     /**
@@ -33,12 +35,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-
+    // Relasi ke Notifikasi (Sesuai kode kamu sebelumnya)
     public function notifications()
     {
-    return $this->hasMany(Notification::class, 'user_id');
+        return $this->hasMany(Notification::class, 'user_id');
     }
-
 
     /**
      * Get the attributes that should be cast.

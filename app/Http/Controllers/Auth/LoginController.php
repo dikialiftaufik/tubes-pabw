@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // <-- Jangan lupa baris ini
 
 class LoginController extends Controller
 {
@@ -14,20 +13,13 @@ class LoginController extends Controller
     | Login Controller
     |--------------------------------------------------------------------------
     |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
+    | Controller ini menangani autentikasi user untuk aplikasi dan
+    | mengarahkan mereka ke layar beranda. Controller ini menggunakan trait
+    | untuk menyediakan fungsionalitasnya.
     |
     */
 
     use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/admin/dashboard';
 
     /**
      * Create a new controller instance.
@@ -40,9 +32,23 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    protected function loggedOut(Request $request)
+    /**
+     * The user has been authenticated.
+     * Logika Redirect Berdasarkan Role (Sesuai Materi Dosen)
+     */
+    protected function authenticated(Request $request, $user)
     {
-        // Mengarahkan pengguna ke halaman login setelah berhasil logout
-        return redirect('/login');
+        // Jika user adalah Admin
+        if ($user->role == 'admin') {
+            return redirect()->intended('/admin/dashboard');
+        }
+
+        // Jika user adalah Kasir
+        if ($user->role == 'kasir') {
+            return redirect()->intended('/kasir');
+        }
+
+        // Jika user adalah Pembeli (Default)
+        return redirect()->intended('/menu');
     }
 }
