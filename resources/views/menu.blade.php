@@ -65,9 +65,13 @@
                         <a href="{{ route('menu.detail', $menu->id) }}" class="btn btn-outline-primary flex-grow-1 rounded-3">
                             <i class="fas fa-info-circle me-1"></i> Detail
                         </a>
-                        <button class="btn btn-primary flex-grow-1 rounded-3" {{ $menu->stok < 1 ? 'disabled' : '' }}>
-                            <i class="fas fa-shopping-cart me-1"></i> Pesan
-                        </button>
+
+                        <form action="{{ route('cart.add', $menu->id) }}" method="POST" class="d-flex flex-grow-1">
+                            @csrf
+                            <button type="submit" class="btn btn-primary w-100 rounded-3" {{ $menu->stok < 1 ? 'disabled' : '' }}>
+                                <i class="fas fa-shopping-cart me-1"></i> Pesan
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

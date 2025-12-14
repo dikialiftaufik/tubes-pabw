@@ -134,7 +134,22 @@ Route::prefix('admin')->group(function () {
 Route::get('/feedback', [FeeddbackController::class, 'index'])->name('feedback.index');
 Route::post('/feedback', [FeeddbackController::class, 'store'])->name('feedback.store');
 
+// Fungsionalitas Keranjang 
+Route::middleware(['auth'])->group(function () {
+    // Menambahkan ke Keranjang
+    Route::post('/cart/add/{id}', [App\Http\Controllers\CartController::class, 'addToCart'])->name('cart.add');
+    Route::get('/cart', [App\Http\Controllers\CartController::class, 'viewCart'])->name('cart.view');
+    Route::delete('/cart/remove/{id}', [App\Http\Controllers\CartController::class, 'removeFromCart'])->name('cart.remove');
 
+    //  Melakukan Pembayaran (Checkout)
+    Route::post('/checkout', [App\Http\Controllers\PembayaranController::class, 'checkout'])->name('checkout.process');
+    
+    // Riwayat Pesanan
+    Route::get('/riwayat-pesanan', [App\Http\Controllers\RiwayatController::class, 'pesanan'])->name('riwayat.pesanan');
+    
+    //  Riwayat Reservasi
+    Route::get('/riwayat-reservasi', [App\Http\Controllers\RiwayatController::class, 'reservasi'])->name('riwayat.reservasi');
+});
 
 
 
