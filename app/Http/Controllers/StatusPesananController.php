@@ -8,7 +8,7 @@ class StatusPesananController extends Controller
 {
     public function index()
     {
-        $pesanan = Pesanan::with(['user', 'detail.menu'])->get();
+        $pesanan = Pesanan::with(['user', 'detailPesanan.menu'])->get();
 
         return view('kasir.status-pesanan', compact('pesanan'));
     }
