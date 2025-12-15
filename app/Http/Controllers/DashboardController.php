@@ -14,14 +14,14 @@ class DashboardController extends Controller
     public function index()
     {
         
-        // Hitung total pendapatan (Hanya dari pesanan yang statusnya 'Selesai')
-        $totalPendapatan = Pesanan::where('status', 'Selesai')->sum('total_harga');
+        // Hitung total pendapatan (Hanya dari pesanan yang status_pesanannya 'Selesai')
+        $totalPendapatan = Pesanan::where('status_pesanan', 'Selesai')->sum('total_hrg');
 
-        // Hitung total pesanan (Semua status)
+        // Hitung total pesanan (Semua status_pesanan)
         $totalPesanan = Pesanan::count();
 
-        // Hitung total reservasi (Dari tabel reservations)
-        $totalReservasi = DB::table('reservations')->count(); 
+        // Hitung total reservasi (Dari tabel reservasi)
+        $totalReservasi = DB::table('reservasi')->count(); 
 
         // Hitung pelanggan baru (User dengan role pembeli yang daftar bulan ini)
         $pelangganBaru = User::where('role', 'pembeli')
@@ -47,15 +47,15 @@ class DashboardController extends Controller
 
             // Query Sum Total Harga per tanggal tersebut
             $income = Pesanan::whereDate('tanggal', $date->format('Y-m-d'))
-                ->where('status', 'Selesai') 
-                ->sum('total_harga');
+                ->where('status_pesanan', 'Selesai') 
+                ->sum('total_hrg');
             
             $dataPendapatan[] = $income;
         }
 
         // Query menggunakan Join antara detail_pesanan dan menu
         $topMenus = DB::table('detail_pesanan')
-            ->join('menu', 'detail_pesanan.menu_id', '=', 'menu.id')
+            ->join('menu', 'detail_pesanan.id_menu', '=', 'menu.id')
             ->select('menu.nama', DB::raw('SUM(detail_pesanan.jumlah) as total_jual'))
             ->groupBy('menu.id', 'menu.nama')
             ->orderByDesc('total_jual')

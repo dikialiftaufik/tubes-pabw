@@ -9,22 +9,27 @@ class Pesanan extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_pesanan'; 
+    public $incrementing = true;
     protected $table = 'pesanan';
-
-    protected $fillable = [
-        'user_id',
-        'tanggal',
-        'total_harga',
-        'status'
-    ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'id_user', 'id');
     }
 
     public function detailPesanan()
     {
-        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
+        return $this->hasMany(DetailPesanan::class, 'id_pesanan', 'id_pesanan');
+    }
+
+    public function reservasi()
+    {
+        return $this->belongsTo(Reservation::class, 'id_reservasi', 'id_reservasi');
+    }
+    
+    public function kasir()
+    {
+        return $this->belongsTo(User::class, 'id_kasir', 'id');
     }
 }
