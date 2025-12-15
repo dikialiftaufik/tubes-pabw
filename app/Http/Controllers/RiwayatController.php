@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RiwayatController extends Controller
 {
-    // No. 13: Riwayat Pesanan
+
     public function pesanan()
     {
         // Ambil pesanan milik user yang sedang login saja
