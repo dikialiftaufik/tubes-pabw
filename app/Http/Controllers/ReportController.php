@@ -23,10 +23,10 @@ class ReportController extends Controller
 
     /**
      * Menampilkan halaman laporan penjualan.
-     * Method ini sebelumnya bernama 'salesReport', diubah menjadi 'index'
-     * agar sesuai dengan panggilan route di web.php.
+     * Method ini diubah namanya dari 'index' menjadi 'salesReport'
+     * agar sesuai dengan route di web.php.
      */
-    public function index()
+    public function salesReport() // <--- NAMA METHOD DIUBAH DISINI
     {
         $salesData = $this->getSalesData();
         return view('admin.reports', compact('salesData'));
@@ -38,7 +38,6 @@ class ReportController extends Controller
     public function exportExcel()
     {
         $data = $this->getSalesData();
-        // Pastikan nama file unik dengan timestamp
         return Excel::download(new SalesReportExport($data), 'laporan_penjualan_'.date('Y-m-d_H-i-s').'.xlsx');
     }
 
@@ -49,10 +48,7 @@ class ReportController extends Controller
     {
         $salesData = $this->getSalesData();
         
-        // Load view khusus PDF
         $pdf = Pdf::loadView('admin.reports_pdf', compact('salesData'));
-        
-        // Set ukuran kertas
         $pdf->setPaper('A4', 'landscape');
         
         return $pdf->download('laporan_penjualan_'.date('Y-m-d_H-i-s').'.pdf');

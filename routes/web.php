@@ -19,24 +19,33 @@ use App\Http\Controllers\StatusPesananController;
 use App\Http\Controllers\StatusReservasiController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\AuthController; // Load AuthController manual
 
-
-// 1. Halaman Depan (Landing Page)
+// 1. Halaman Depan (Landing Page - Public)
 Route::get('/', function () {
     return view('landing');
 });
 
-// 2. Auth (Login/Register)
-Auth::routes();
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// 2. Auth Manual (Login/Logout)
+// Kita gunakan AuthController buatan sendiri, bukan Auth::routes()
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// 3. Route Dashboard Umum (Admin)
-Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+// Route untuk Register (Jika diperlukan, arahkan ke controller yang sesuai atau gunakan bawaan)
+// Untuk saat ini kita fokus Login sesuai request. Jika butuh register:
+// Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+// Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 
-// 4. Group Route ADMIN
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () { // Tambahkan middleware role:admin jika sudah dibuat
 
-    // Kelola Menu
+// 3. Group Route ADMIN (Harus Login & Role Admin)
+// Permintaan: Dashboard, CRUD Menu, Reports harus role admin
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+    
+    // Dashboard Admin
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+    // Kelola Menu (CRUD)
     Route::get('/menu', [AdminMenuController::class, 'index'])->name('admin.menu.index');
     Route::get('/menu/input', [AdminMenuController::class, 'input'])->name('admin.menu.input');
     Route::post('/menu/simpan', [AdminMenuController::class, 'simpan'])->name('admin.menu.simpan');
@@ -44,19 +53,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () { 
     Route::post('/menu/update/{id}', [AdminMenuController::class, 'update'])->name('admin.menu.update');
     Route::get('/menu/hapus/{id}', [AdminMenuController::class, 'hapus'])->name('admin.menu.hapus');
 
-    // Laporan (Reports)
+    // Laporan (Reports) - Method controller sudah diperbaiki jadi 'salesReport'
     Route::get('/reports', [ReportController::class, 'salesReport'])->name('admin.reports.index');
     Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('admin.reports.export_excel');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.export_pdf');
 
-    // Notifikasi
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
-    Route::get('/notifications/create', [NotificationController::class, 'create'])->name('admin.notifications.create');
-    Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
-    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('admin.notifications.show');
-    Route::get('/notifications/{id}/edit', [NotificationController::class, 'edit'])->name('admin.notifications.edit');
-    Route::put('/notifications/{id}', [NotificationController::class, 'update'])->name('admin.notifications.update');
-    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
+    // Notifikasi Admin
+    Route::resource('notifications', NotificationController::class, ['as' => 'admin']);
 
     // Fitur Lain Admin
     Route::get('/feedback', [AdminFeedbackController::class, 'index']);
@@ -67,42 +70,44 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () { 
     Route::get('/customers', [CustomerController::class, 'index']);
 });
 
-// 5. Route PUBLIC (Bisa diakses tanpa login)
-Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
-Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
-Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
 
-// 6. Group Route PEMBELI / USER (Wajib Login)
-Route::middleware(['auth'])->group(function () {
+// 4. Group Route PEMBELI / USER (Harus Login & Role Pembeli)
+// Permintaan: Akses URL '/menu' harus login role pembeli
+Route::middleware(['auth', 'role:pembeli'])->group(function () {
 
+    // Menu (Sekarang dilindungi, hanya pembeli yang bisa lihat dan pesan)
+    Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
+    Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
+    
     // Feedback User
-    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index'); // Form Feedback
-    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store'); // Simpan Feedback
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
     // Reservasi User
     Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');
 
-    //FITUR KERANJANG
+    // Cart & Pembayaran
     Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
     Route::delete('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-
-    //FITUR PEMBAYARAN & RIWAYAT
-    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index'); // Hapus yang lama jika conflic
+    
+    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index'); 
     Route::post('/checkout', [PembayaranController::class, 'checkout'])->name('checkout.process');
     Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
-
-    // Route Halaman Pembayaran (Baru)
-    Route::get('/pembayaran/{id}', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::get('/pembayaran/{id}', [PembayaranController::class, 'index'])->name('pembayaran.detail');
     Route::post('/pembayaran/proses/{id}', [PembayaranController::class, 'proses'])->name('pembayaran.proses');
 
     // Riwayat
     Route::get('/riwayat-pesanan', [App\Http\Controllers\RiwayatController::class, 'pesanan'])->name('riwayat.pesanan');
     Route::get('/riwayat-reservasi', [App\Http\Controllers\RiwayatController::class, 'reservasi'])->name('riwayat.reservasi');
+    
+    // Notifikasi Fetch (Ajax)
+    Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
 });
 
-// 7. Group Route KASIR
-Route::prefix('kasir')->middleware(['auth'])->group(function () {
+
+// 5. Group Route KASIR (Harus Login & Role Kasir)
+Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
 
     // Dashboard Kasir
     Route::get('/', [DashboardKasirController::class, 'index'])->name('kasir.dashboard');
@@ -123,3 +128,6 @@ Route::prefix('kasir')->middleware(['auth'])->group(function () {
     Route::post('/reservasi/update/{id}', [StatusReservasiController::class, 'updateStatus'])->name('kasir.reservasi.update');
     Route::post('/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])->name('kasir.reservasi.cancel');
 });
+
+// Route Home Default (Redirecter)
+Route::get('/home', [HomeController::class, 'index'])->name('home');
