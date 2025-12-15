@@ -48,9 +48,14 @@
                             </td>
 
                             <td>
-                                <button class="btn btn-sm btn-primary" onclick="ubahStatus(this)">
-                                    Ubah Status
-                                </button>
+                                <form action="{{ route('kasir.status.update', $p->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit"
+                                        class="btn btn-sm {{ $p->status == 'Selesai' ? 'btn-secondary' : 'btn-primary' }}">
+                                        {{ $p->status == 'Selesai' ? 'Buka Kembali' : 'Ubah Status' }}
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -62,20 +67,6 @@
 
     </div>
 
-    <script>
-        function ubahStatus(button) {
-            const statusElem = button.closest('tr').querySelector('.status');
 
-            if (statusElem.textContent.trim() === 'Sedang Dibuat') {
-                statusElem.textContent = 'Selesai';
-                statusElem.classList.remove('text-warning');
-                statusElem.classList.add('text-success');
-            } else {
-                statusElem.textContent = 'Sedang Dibuat';
-                statusElem.classList.remove('text-success');
-                statusElem.classList.add('text-warning');
-            }
-        }
-    </script>
 
 @endsection

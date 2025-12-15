@@ -14,10 +14,10 @@ class RiwayatController extends Controller
     {
         // Ambil pesanan milik user yang sedang login saja
         $pesanan = Pesanan::where('user_id', Auth::id())
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-                    
-        return view('user.riwayat_pesanan', compact('pesanan'));
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('riwayat_pesanan', compact('pesanan'));
     }
 
     // No. 16: Riwayat Reservasi
@@ -25,9 +25,9 @@ class RiwayatController extends Controller
     {
         // Ambil reservasi milik user yang sedang login saja
         $reservasi = Reservation::where('user_id', Auth::id())
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('user.riwayat_reservasi', compact('reservasi'));
+        return view('riwayat_reservasi', compact('reservasi'));
     }
 }

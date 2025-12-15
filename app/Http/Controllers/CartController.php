@@ -18,35 +18,36 @@ class CartController extends Controller
     public function addToCart(Request $request, $id)
     {
         $menu = Menu::find($id);
-        
-        if(!$menu) {
+
+        if (!$menu) {
             abort(404);
         }
 
         $cart = session()->get('cart', []);
+        $quantity = $request->input('quantity', 1); // Default 1 jika tidak ada input
 
-        // Jika menu sudah ada di cart, tambah quantity
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity']++;
+        // Jika menu sudah ada di cart, tambah quantity sesuai input (atau +1 jika dari tombol biasa)
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity'] += $quantity;
         } else {
             // Jika belum, masukkan data menu
             $cart[$id] = [
-                "name" => $menu->nama_menu, // Pastikan sesuai nama kolom di DB Menu Diki
-                "quantity" => 1,
+                "name" => $menu->nama, // Perbaikan nama kolom
+                "quantity" => $quantity,
                 "price" => $menu->harga,
-                "image" => $menu->gambar // Sesuaikan jika ada kolom gambar
+                "image" => $menu->foto // Perbaikan nama kolom
             ];
         }
 
         session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Menu berhasil ditambahkan ke keranjang!');
+        return redirect()->route('cart.view')->with('success', 'Menu berhasil ditambahkan ke keranjang!');
     }
 
     // Hapus item
     public function removeFromCart($id)
     {
         $cart = session()->get('cart');
-        if(isset($cart[$id])) {
+        if (isset($cart[$id])) {
             unset($cart[$id]);
             session()->put('cart', $cart);
         }
