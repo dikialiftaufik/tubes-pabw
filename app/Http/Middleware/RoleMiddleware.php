@@ -18,11 +18,12 @@ class RoleMiddleware
     {
         // 1. Cek apakah user sudah login
         if (!Auth::check()) {
+            \Illuminate\Support\Facades\Log::info('RoleMiddleware: NOT LOGGED IN. Redirecting...', ['url' => $request->url()]);
             return redirect('/login');
         }
 
-        // 2. Ambil role user saat ini
         $userRole = Auth::user()->role;
+        \Illuminate\Support\Facades\Log::info('RoleMiddleware: Check', ['role' => $userRole, 'required' => $roles, 'url' => $request->url()]);
 
         // 3. Cek apakah role user ada di dalam daftar role yang diizinkan
         // $roles dikirim dari route, misal: 'admin', 'pembeli'

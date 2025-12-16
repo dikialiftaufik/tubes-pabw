@@ -51,7 +51,7 @@ class PembayaranController extends Controller
         session()->forget('cart');
 
         // Redirect ke Halaman Pembayaran, bukan langsung Riwayat
-        return redirect()->route('pembayaran.index', $pesanan->id);
+        return redirect()->route('pembayaran.detail', $pesanan->id);
     }
 
     public function index($id)
