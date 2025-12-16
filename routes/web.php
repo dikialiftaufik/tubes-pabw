@@ -19,10 +19,7 @@ use App\Http\Controllers\StatusPesananController;
 use App\Http\Controllers\StatusReservasiController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ApiPaymentController;
-
-
+use App\Http\Controllers\AuthController; // Load AuthController manual
 
 // 1. Halaman Depan (Landing Page - Public)
 Route::get('/', function () {
@@ -134,7 +131,3 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
 
 // Route Home Default (Redirecter)
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-Route::get('/cek-status/{id}', [ApiPaymentController::class, 'checkStatus']);
-
-Route::post('/konfirmasi-bayar', [ApiPaymentController::class, 'confirmPayment']);
