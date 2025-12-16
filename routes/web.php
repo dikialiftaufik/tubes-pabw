@@ -19,7 +19,8 @@ use App\Http\Controllers\StatusPesananController;
 use App\Http\Controllers\StatusReservasiController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\AuthController; // Load AuthController manual
+use App\Http\Controllers\AuthController; 
+use App\Http\Controllers\RiwayatController;
 
 // 1. Halaman Depan (Landing Page - Public)
 Route::get('/', function () {
@@ -27,19 +28,22 @@ Route::get('/', function () {
 });
 
 // 2. Auth Manual (Login/Logout)
-// Kita gunakan AuthController buatan sendiri, bukan Auth::routes()
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Route untuk Register (Jika diperlukan, arahkan ke controller yang sesuai atau gunakan bawaan)
-// Untuk saat ini kita fokus Login sesuai request. Jika butuh register:
-// Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-// Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+// 3. Group Route UMUM (Bisa diakses oleh SEMUA user yang sudah LOGIN)
+// PENTING: Route notifikasi ditaruh di sini agar Admin & Kasir juga bisa fetch notifikasi tanpa error 403
+Route::middleware(['auth'])->group(function () {
+    
+    // Route Fetch Notifikasi (Ajax) - Akses untuk semua role
+    Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
+    
+    // Redirect Home Default
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+});
 
-
-// 3. Group Route ADMIN (Harus Login & Role Admin)
-// Permintaan: Dashboard, CRUD Menu, Reports harus role admin
+// 4. Group Route ADMIN (Harus Login & Role Admin)
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     
     // Dashboard Admin
@@ -53,12 +57,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/menu/update/{id}', [AdminMenuController::class, 'update'])->name('admin.menu.update');
     Route::get('/menu/hapus/{id}', [AdminMenuController::class, 'hapus'])->name('admin.menu.hapus');
 
-    // Laporan (Reports) - Method controller sudah diperbaiki jadi 'salesReport'
+    // Laporan (Reports)
     Route::get('/reports', [ReportController::class, 'salesReport'])->name('admin.reports.index');
     Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('admin.reports.export_excel');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.export_pdf');
 
-    // Notifikasi Admin
+    // Notifikasi Admin (CRUD Penuh)
     Route::resource('notifications', NotificationController::class, ['as' => 'admin']);
 
     // Fitur Lain Admin
@@ -71,11 +75,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 });
 
 
-// 4. Group Route PEMBELI / USER (Harus Login & Role Pembeli)
-// Permintaan: Akses URL '/menu' harus login role pembeli
+// 5. Group Route PEMBELI / USER (Harus Login & Role Pembeli)
 Route::middleware(['auth', 'role:pembeli'])->group(function () {
 
-    // Menu (Sekarang dilindungi, hanya pembeli yang bisa lihat dan pesan)
+    // Menu (Akses Khusus Pembeli)
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
     
@@ -98,15 +101,12 @@ Route::middleware(['auth', 'role:pembeli'])->group(function () {
     Route::post('/pembayaran/proses/{id}', [PembayaranController::class, 'proses'])->name('pembayaran.proses');
 
     // Riwayat
-    Route::get('/riwayat-pesanan', [App\Http\Controllers\RiwayatController::class, 'pesanan'])->name('riwayat.pesanan');
-    Route::get('/riwayat-reservasi', [App\Http\Controllers\RiwayatController::class, 'reservasi'])->name('riwayat.reservasi');
-    
-    // Notifikasi Fetch (Ajax)
-    Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
+    Route::get('/riwayat-pesanan', [RiwayatController::class, 'pesanan'])->name('riwayat.pesanan');
+    Route::get('/riwayat-reservasi', [RiwayatController::class, 'reservasi'])->name('riwayat.reservasi');
 });
 
 
-// 5. Group Route KASIR (Harus Login & Role Kasir)
+// 6. Group Route KASIR (Harus Login & Role Kasir)
 Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
 
     // Dashboard Kasir
@@ -128,6 +128,3 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     Route::post('/reservasi/update/{id}', [StatusReservasiController::class, 'updateStatus'])->name('kasir.reservasi.update');
     Route::post('/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])->name('kasir.reservasi.cancel');
 });
-
-// Route Home Default (Redirecter)
-Route::get('/home', [HomeController::class, 'index'])->name('home');

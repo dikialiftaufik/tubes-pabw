@@ -22,16 +22,18 @@ class NotificationController extends Controller
             ]);
         }
 
-        // Ambil notifikasi untuk user yang login DAN notifikasi umum (NULL)
+        // Sesuaikan query dengan kolom 'id_user'
         $notifications = Notification::where(function($query) use ($user) {
-                $query->where('user_id', $user->id)
-                      ->orWhereNull('user_id');
+                $query->where('id_user', $user->id)
+                      ->orWhereNull('id_user');
             })
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
 
-        $unreadCount = $notifications->where('is_read', 0)->count();
+        // Karena tidak ada kolom is_read di database, kita anggap count 0 atau hitung semua
+        // Jika ingin menghitung jumlah, sementara kita return jumlah total notifikasi saja
+        $unreadCount = $notifications->count(); 
 
         return response()->json([
             'count' => $unreadCount,
@@ -40,89 +42,57 @@ class NotificationController extends Controller
     }
 
     /**
-     * Method untuk Admin Dashboard - Menandai notifikasi sebagai sudah dibaca
+     * Method Dummy untuk Mark As Read (Karena kolom is_read tidak ada di DB)
      */
     public function markAsRead($id)
     {
-        try {
-            $notification = Notification::findOrFail($id);
-            $notification->update(['is_read' => 1]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Notifikasi telah ditandai sebagai dibaca'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menandai notifikasi: ' . $e->getMessage()
-            ], 500);
-        }
+        // Fitur dimatikan sementara karena tidak ada kolom is_read di tabel notifikasi
+        return response()->json([
+            'success' => true,
+            'message' => 'Fitur mark read dinonaktifkan (Kolom DB tidak tersedia)'
+        ]);
     }
 
-    /**
-     * Method untuk Admin Dashboard - Menandai semua notifikasi sebagai sudah dibaca
-     */
     public function markAllAsRead()
     {
-        try {
-            Notification::where('is_read', 0)->update(['is_read' => 1]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Semua notifikasi telah ditandai sebagai dibaca'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menandai notifikasi: ' . $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Fitur mark all read dinonaktifkan (Kolom DB tidak tersedia)'
+        ]);
     }
 
     /**
      * ADMIN DASHBOARD METHODS
      */
 
-    /**
-     * Display a listing of the resource for admin.
-     * Hanya tampilkan notifikasi untuk semua user (user_id = NULL)
-     */
     public function index()
     {
-        $notifications = Notification::whereNull('user_id')
+        // Ubah user_id menjadi id_user
+        $notifications = Notification::whereNull('id_user')
             ->orderBy('created_at', 'desc')
             ->get();
         
         return view('admin.notifications', compact('notifications'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.notifications');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * Otomatis set user_id menjadi NULL untuk notifikasi umum
-     */
     public function store(Request $request)
     {
+        // Validasi input form (name field di view mungkin masih 'title'/'message', kita mapping disini)
         $request->validate([
-            'title' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:150', // Sesuai varchar(150)
             'message' => 'required|string',
-            'is_read' => 'boolean'
         ]);
 
         try {
             Notification::create([
-                'title' => $request->title,
-                'message' => $request->message,
-                'user_id' => null, // Selalu NULL untuk notifikasi di admin (notifikasi umum)
-                'is_read' => $request->is_read ?? 0,
+                'judul_notifikasi' => $request->title,     // Mapping ke kolom DB
+                'pesan_notifikasi' => $request->message,   // Mapping ke kolom DB
+                'id_user' => null,                         // Mapping ke kolom DB
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -144,15 +114,11 @@ class NotificationController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         try {
-            $notification = Notification::whereNull('user_id')->findOrFail($id);
+            $notification = Notification::whereNull('id_user')->findOrFail($id);
             
-            // Return JSON for AJAX requests
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json($notification);
             }
@@ -167,15 +133,11 @@ class NotificationController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
         try {
-            $notification = Notification::whereNull('user_id')->findOrFail($id);
+            $notification = Notification::whereNull('id_user')->findOrFail($id);
             
-            // Return JSON for AJAX requests
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json($notification);
             }
@@ -190,25 +152,19 @@ class NotificationController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     * Pastikan user_id tetap NULL untuk notifikasi umum
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:150',
             'message' => 'required|string',
-            'is_read' => 'boolean'
         ]);
 
         try {
-            $notification = Notification::whereNull('user_id')->findOrFail($id);
+            $notification = Notification::whereNull('id_user')->findOrFail($id);
             $notification->update([
-                'title' => $request->title,
-                'message' => $request->message,
-                'user_id' => null, // Tetap NULL untuk notifikasi umum
-                'is_read' => $request->is_read ?? $notification->is_read,
+                'judul_notifikasi' => $request->title,
+                'pesan_notifikasi' => $request->message,
+                'id_user' => null,
                 'updated_at' => now()
             ]);
 
@@ -229,13 +185,10 @@ class NotificationController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         try {
-            $notification = Notification::whereNull('user_id')->findOrFail($id);
+            $notification = Notification::whereNull('id_user')->findOrFail($id);
             $notification->delete();
 
             if (request()->ajax() || request()->wantsJson()) {
@@ -254,40 +207,25 @@ class NotificationController extends Controller
         }
     }
 
-    /**
-     * Bulk actions for admin dashboard
-     * Hanya untuk notifikasi umum (user_id = NULL)
-     */
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:delete,mark_read,mark_unread',
+            'action' => 'required|in:delete', // Hapus mark_read/unread karena tidak support
             'ids' => 'required|array',
-            'ids.*' => 'exists:notifications,id'
+            'ids.*' => 'exists:notifikasi,id_notifikasi' // Sesuaikan table & PK
         ]);
 
         try {
-            // Hanya proses notifikasi dengan user_id NULL
-            $query = Notification::whereIn('id', $request->ids)->whereNull('user_id');
+            $query = Notification::whereIn('id_notifikasi', $request->ids)->whereNull('id_user');
 
             switch ($request->action) {
                 case 'delete':
                     $query->delete();
                     $message = 'Notifikasi terpilih berhasil dihapus';
                     break;
-
-                case 'mark_read':
-                    $query->update(['is_read' => 1, 'updated_at' => now()]);
-                    $message = 'Notifikasi terpilih berhasil ditandai sebagai dibaca';
-                    break;
-
-                case 'mark_unread':
-                    $query->update(['is_read' => 0, 'updated_at' => now()]);
-                    $message = 'Notifikasi terpilih berhasil ditandai sebagai belum dibaca';
-                    break;
-
+                
                 default:
-                    return redirect()->back()->with('error', 'Aksi tidak valid');
+                    return redirect()->back()->with('error', 'Aksi tidak valid atau tidak didukung database');
             }
 
             return redirect()->back()->with('success', $message);
@@ -298,16 +236,14 @@ class NotificationController extends Controller
         }
     }
 
-    /**
-     * Get notifications statistics for admin dashboard
-     * Hanya hitung notifikasi umum (user_id = NULL)
-     */
     public function getStatistics()
     {
-        $totalNotifications = Notification::whereNull('user_id')->count();
-        $unreadNotifications = Notification::whereNull('user_id')->where('is_read', 0)->count();
-        $readNotifications = Notification::whereNull('user_id')->where('is_read', 1)->count();
-        $todayNotifications = Notification::whereNull('user_id')->whereDate('created_at', today())->count();
+        // Sesuaikan dengan kolom yang ada
+        $totalNotifications = Notification::whereNull('id_user')->count();
+        // Unread/Read tidak bisa dihitung real, kita return 0 atau total
+        $unreadNotifications = 0; 
+        $readNotifications = 0;
+        $todayNotifications = Notification::whereNull('id_user')->whereDate('created_at', today())->count();
 
         return response()->json([
             'total' => $totalNotifications,
