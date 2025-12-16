@@ -17,8 +17,20 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // 1. Cek apakah user sudah login
+        \Illuminate\Support\Facades\Log::info('RoleMiddleware START', [
+            'url' => $request->url(),
+            'method' => $request->method(),
+            'session_id' => session()->getId(),
+            'has_session' => $request->hasSession(),
+            'auth_check' => Auth::check(),
+            'user_id' => Auth::id(),
+        ]);
+
         if (!Auth::check()) {
-            \Illuminate\Support\Facades\Log::info('RoleMiddleware: NOT LOGGED IN. Redirecting...', ['url' => $request->url()]);
+            \Illuminate\Support\Facades\Log::warning('RoleMiddleware: NOT LOGGED IN. Redirecting to login', [
+                'url' => $request->url(),
+                'session_id' => session()->getId(),
+            ]);
             return redirect('/login');
         }
 

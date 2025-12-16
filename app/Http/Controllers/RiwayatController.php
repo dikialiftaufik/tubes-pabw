@@ -12,8 +12,9 @@ class RiwayatController extends Controller
 
     public function pesanan()
     {
-        // Ambil pesanan milik user yang sedang login saja
+        // Ambil pesanan milik user yang sedang login saja dengan relasi detailPesanan dan menu
         $pesanan = Pesanan::where('user_id', Auth::id())
+            ->with('detailPesanan.menu') // Load relasi agar nama menu bisa ditampilkan
             ->orderBy('created_at', 'desc')
             ->get();
 

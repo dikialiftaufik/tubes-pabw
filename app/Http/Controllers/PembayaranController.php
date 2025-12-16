@@ -3,38 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Pesanan;
-use App\Models\DetailPesanan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Pesanan;
+use App\Models\DetailPesanan;
 
 class PembayaranController extends Controller
 {
+    // Halaman Pembayaran (Lihat Detail Pesanan & Tombol Konfirmasi)
+    public function index($id = null)
+    {
+        if ($id) {
+            $pesanan = Pesanan::with('detailPesanan.menu')->findOrFail($id);
+            return view('pembayaran.index', compact('pesanan'));
+        } else {
+            $cart = session('cart');
+            return view('pembayaran.index', compact('cart'));
+        }
+    }
+
+    // PROSES CHECKOUT (Simpan Data & Redirect ke Menu)
     public function checkout()
     {
+        // 1. Ambil data keranjang
         $cart = session()->get('cart');
 
+        // Jika keranjang kosong, tendang balik
         if (!$cart) {
-            return redirect()->back()->with('error', 'Keranjang kosong!');
+            return redirect()->back()->with('error', 'Keranjang belanja kosong!');
         }
 
-        // Hitung Total
+        // 2. Hitung Total Harga
         $totalHarga = 0;
         foreach ($cart as $id => $details) {
             $totalHarga += $details['price'] * $details['quantity'];
         }
 
-        // Gunakan Transaction agar data aman
+        // 3. Simpan ke Database (Gunakan Transaction biar aman)
         $pesanan = DB::transaction(function () use ($cart, $totalHarga) {
-            // 1. Buat Pesanan
+
+            // A. Simpan data utama PESANAN
             $pesanan = Pesanan::create([
-                'user_id' => Auth::id(),
-                'tanggal' => now(),
-                'total_harga' => $totalHarga,
-                'status' => 'pending', // Status awal, nanti diubah Kasir
+                'user_id' => Auth::id(),        // Siapa yang beli
+                'tanggal' => now(),             // Kapan
+                'total_harga' => $totalHarga,   // Berapa totalnya
+                'status' => 'pending',          // Status awal (menunggu konfirmasi kasir)
+                'metode_pembayaran' => 'cash',  // Default cash
             ]);
 
-            // 2. Masukkan Detail Menu ke DetailPesanan
+            // B. Simpan Rincian Menu (DetailPesanan)
             foreach ($cart as $id => $details) {
                 DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,
@@ -47,41 +64,42 @@ class PembayaranController extends Controller
             return $pesanan;
         });
 
-        // 3. Kosongkan Keranjang
+        // 4. Hapus Keranjang (Karena sudah dibeli)
         session()->forget('cart');
 
-        // Redirect ke Halaman Pembayaran, bukan langsung Riwayat
+        // 5. Redirect ke Halaman Pembayaran (untuk pilih metode & konfirmasi)
         return redirect()->route('pembayaran.detail', $pesanan->id);
     }
 
-    public function index($id)
+    // Method untuk confirm pembayaran & redirect LANGSUNG ke menu
+    public function proses($id)
     {
-        $pesanan = Pesanan::with('detailPesanan.menu')->findOrFail($id);
+        // DEBUG: Log session state SEBELUM proses
+        \Log::info('PAYMENT PROSES START', [
+            'session_id' => session()->getId(),
+            'auth_check' => Auth::check(),
+            'user_id' => Auth::id(),
+        ]);
 
-        // Pastikan hanya pemilik pesanan yang bisa akses
-        if ($pesanan->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        return view('pembayaran.index', compact('pesanan'));
-    }
-
-    public function proses(Request $request, $id)
-    {
         $pesanan = Pesanan::findOrFail($id);
 
+        // DEBUG: Log session state SETELAH query
+        \Log::info('PAYMENT PROSES AFTER QUERY', [
+            'session_id' => session()->getId(),
+            'auth_check' => Auth::check(),
+            'user_id' => Auth::id(),
+        ]);
 
-
-        // Ubah status jika perlu, misalnya tetap pending atau menunggu konfirmasi
-        // $pesanan->status = 'menunggu_konfirmasi'; 
-        // $pesanan->save();
-
-        // Redirect ke halaman Menu dengan pesan sukses
-        return redirect()->route('menu.index')->with('success', 'Pembayaran berhasil dikonfirmasi! Pesanan Anda sedang diproses.');
+        // SOLUSI RADIKAL: JANGAN redirect! Langsung render view menu
+        // Redirect corrupt session dengan cookie driver, jadi kita render langsung
+        $dt_menu = \App\Models\Menu::all();
+        return view('menu', compact('dt_menu'));
     }
 
+    // Halaman Sukses (Redirect ke menu setelah beberapa detik)
     public function berhasil()
     {
-        return view('pembayaran.berhasil');
+        // Bisa langsung redirect atau tampilkan view dulu
+        return redirect()->route('menu.index')->with('success', 'Pembayaran berhasil! Terima kasih atas pesanan Anda.');
     }
 }

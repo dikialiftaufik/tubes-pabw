@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'driver' => 'cookie', // env('SESSION_DRIVER', 'database'),
+    'driver' => 'file', // Ganti ke file karena cookie driver tidak stabil
 
     /*
     |--------------------------------------------------------------------------

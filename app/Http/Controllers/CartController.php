@@ -53,4 +53,28 @@ class CartController extends Controller
         }
         return redirect()->back()->with('success', 'Menu dihapus dari keranjang');
     }
+
+    // Update quantity (untuk tombol + dan -)
+    public function updateQuantity(Request $request, $id)
+    {
+        $cart = session()->get('cart', []);
+        $action = $request->input('action'); // 'increase' or 'decrease'
+
+        if (isset($cart[$id])) {
+            if ($action === 'increase') {
+                $cart[$id]['quantity']++;
+            } elseif ($action === 'decrease') {
+                $cart[$id]['quantity']--;
+
+                // Jika quantity jadi 0, hapus item
+                if ($cart[$id]['quantity'] <= 0) {
+                    unset($cart[$id]);
+                }
+            }
+
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->back()->with('success', 'Quantity diupdate');
+    }
 }

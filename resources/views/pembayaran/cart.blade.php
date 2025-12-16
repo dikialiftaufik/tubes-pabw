@@ -33,11 +33,33 @@
                                             </div>
                                         </td>
                                         <td class="py-3">
-                                            <span class="badge bg-secondary rounded-pill">{{ $details['quantity'] }}</span>
+                                            <div class="d-flex align-items-center gap-2">
+                                                {{-- Tombol Kurang --}}
+                                                <form action="{{ route('cart.update', $id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <input type="hidden" name="action" value="decrease">
+                                                    <button type="submit" class="btn btn-outline-warning btn-sm" title="Kurangi">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                </form>
+
+                                                {{-- Quantity Display --}}
+                                                <span class="badge bg-secondary fs-6 px-3 py-2">{{ $details['quantity'] }}</span>
+
+                                                {{-- Tombol Tambah --}}
+                                                <form action="{{ route('cart.update', $id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <input type="hidden" name="action" value="increase">
+                                                    <button type="submit" class="btn btn-outline-success btn-sm" title="Tambah">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                         <td class="py-3">Rp {{ number_format($details['price'], 0, ',', '.') }}</td>
                                         <td class="py-3 fw-bold text-warning">Rp
-                                            {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}</td>
+                                            {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}
+                                        </td>
                                         <td class="py-3">
                                             <form action="{{ route('cart.remove', $id) }}" method="POST" class="d-inline">
                                                 @csrf @method('DELETE')

@@ -11,6 +11,7 @@
                         <thead>
                             <tr class="text-uppercase border-secondary">
                                 <th class="py-3">Tanggal</th>
+                                <th class="py-3">Menu Dipesan</th>
                                 <th class="py-3">Total Harga</th>
                                 <th class="py-3">Status</th>
                             </tr>
@@ -21,6 +22,21 @@
                                     <td class="py-3">
                                         <i class="far fa-calendar-alt me-2 text-muted"></i>
                                         {{ $p->created_at->format('d M Y, H:i') }}
+                                    </td>
+                                    <td class="py-3">
+                                        @if($p->detailPesanan->count() > 0)
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach($p->detailPesanan as $detail)
+                                                    <li class="mb-1">
+                                                        <i class="fas fa-utensils me-2 text-warning"></i>
+                                                        <strong>{{ $detail->menu->nama ?? 'Menu Terhapus' }}</strong>
+                                                        <span class="text-muted small">({{ $detail->jumlah }}x)</span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <span class="text-muted">Tidak ada detail</span>
+                                        @endif
                                     </td>
                                     <td class="py-3 fw-bold text-warning">Rp {{ number_format($p->total_harga, 0, ',', '.') }}
                                     </td>
@@ -33,7 +49,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center py-5 text-muted">
+                                    <td colspan="4" class="text-center py-5 text-muted">
                                         <i class="fas fa-history fa-3x mb-3"></i><br>
                                         Belum ada riwayat pesanan.
                                     </td>

@@ -34,6 +34,12 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// DIAGNOSTIC ROUTES (Temporary - untuk debugging session)
+Route::get('/session/check', [App\Http\Controllers\SessionDiagnosticController::class, 'check']);
+Route::get('/session/test', [App\Http\Controllers\SessionDiagnosticController::class, 'test']);
+Route::get('/session/verify', [App\Http\Controllers\SessionDiagnosticController::class, 'verify']);
+Route::get('/session/logs', [App\Http\Controllers\SessionDiagnosticController::class, 'viewLogs']);
+
 // 3. Group Route UMUM (Bisa diakses oleh SEMUA user yang sudah LOGIN)
 // PENTING: Route notifikasi ditaruh di sini agar Admin & Kasir juga bisa fetch notifikasi tanpa error 403
 Route::middleware(['auth'])->group(function () {
@@ -84,6 +90,7 @@ Route::middleware(['auth', 'role:pembeli'])->group(function () {
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
 
+
     // Feedback User
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
@@ -95,16 +102,18 @@ Route::middleware(['auth', 'role:pembeli'])->group(function () {
     Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
     Route::delete('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
+    Route::post('/cart/update/{id}', [CartController::class, 'updateQuantity'])->name('cart.update');
 
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::post('/checkout', [PembayaranController::class, 'checkout'])->name('checkout.process');
     Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'index'])->name('pembayaran.detail');
-    Route::post('/pembayaran/proses/{id}', [PembayaranController::class, 'proses'])->name('pembayaran.proses');
+    Route::get('/pembayaran/proses/{id}', [PembayaranController::class, 'proses'])->name('pembayaran.proses');
 
     // Riwayat
     Route::get('/riwayat-pesanan', [RiwayatController::class, 'pesanan'])->name('riwayat.pesanan');
     Route::get('/riwayat-reservasi', [RiwayatController::class, 'reservasi'])->name('riwayat.reservasi');
+    Route::post('/checkout', [PembayaranController::class, 'checkout'])->name('checkout.process');
 });
 
 
