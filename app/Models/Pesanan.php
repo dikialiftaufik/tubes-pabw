@@ -9,18 +9,16 @@ class Pesanan extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_pesanan';
-    public $incrementing = true;
     protected $table = 'pesanan';
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function detailPesanan()
     {
-        return $this->hasMany(DetailPesanan::class, 'pesanan_id', 'id_pesanan');
+        return $this->hasMany(DetailPesanan::class, 'pesanan_id');
     }
 
     public function reservasi()
