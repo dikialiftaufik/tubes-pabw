@@ -7,28 +7,23 @@ use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Models\Pesanan;
 use App\Models\User;
-use App\Models\Feedback; // Jika modelnya bernama Feedback (sesuai sql)
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
-        // Hitung data untuk dashboard
-        $totalMenu = Menu::count();
-        $totalPesanan = Pesanan::count();
-        $totalUser = User::where('role', 'pembeli')->count();
-        // Sesuaikan nama tabel feedback jika berbeda, di sql tertulis 'feedback'
-        $totalFeedback = \DB::table('feedback')->count(); 
+        // Statistik sederhana untuk dashboard
+        $data = [
+            'total_menu' => Menu::count(),
+            'total_pesanan' => Pesanan::count(),
+            'total_pembeli' => User::where('role', 'pembeli')->count(),
+            'pendapatan_total' => Pesanan::where('status_pesanan', 'Selesai')->sum('total_harga')
+        ];
 
         return response()->json([
             'success' => true,
             'message' => 'Data Dashboard Admin',
-            'data' => [
-                'total_menu' => $totalMenu,
-                'total_pesanan' => $totalPesanan,
-                'total_pembeli' => $totalUser,
-                'total_feedback' => $totalFeedback
-            ]
+            'data' => $data
         ], 200);
     }
 }

@@ -11,43 +11,31 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
-    // Mengambil data report dalam format JSON
+    private function getSalesData()
+    {
+        // Pastikan relasi 'user' dan 'detailPesanan.menu' ada di model Pesanan
+        return Pesanan::with(['user', 'detailPesanan.menu'])
+            ->where('status_pesanan', 'Selesai')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
     public function index()
     {
-        // Sesuaikan query dengan ReportController yang asli
-        // Pastikan relasi 'user' dan 'detailPesanan.menu' ada di model Pesanan
-        $salesData = Pesanan::with(['user', 'detailPesanan.menu'])
-            ->where('status_pesanan', 'Selesai') // Menggunakan 'status_pesanan' sesuai perbaikan SQL sebelumnya
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Laporan Penjualan',
-            'data' => $salesData
-        ], 200);
+        $data = $this->getSalesData();
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
-    // Export Excel via API
     public function exportExcel()
     {
-        $salesData = Pesanan::with(['user', 'detailPesanan.menu'])
-            ->where('status_pesanan', 'Selesai')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return Excel::download(new SalesReportExport($salesData), 'laporan_penjualan_api.xlsx');
+        $data = $this->getSalesData();
+        return Excel::download(new SalesReportExport($data), 'laporan_penjualan_api.xlsx');
     }
 
-    // Export PDF via API
     public function exportPdf()
     {
-        $salesData = Pesanan::with(['user', 'detailPesanan.menu'])
-            ->where('status_pesanan', 'Selesai')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
-        // Menggunakan view yang sama dengan web agar tampilan konsisten
+        $salesData = $this->getSalesData();
+        // Menggunakan view yang sama dengan web agar desain konsisten
         $pdf = Pdf::loadView('admin.reports_pdf', compact('salesData'));
         $pdf->setPaper('A4', 'landscape');
         
