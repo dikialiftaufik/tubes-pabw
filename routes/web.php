@@ -29,6 +29,7 @@ Route::get('/', function () {
 });
 
 // 2. Auth Manual (Login/Logout)
+Auth::routes(['login' => false, 'logout' => false]); // <--- Tambahkan ini untuk Register & Forgot Password
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -36,17 +37,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // 3. Group Route UMUM (Bisa diakses oleh SEMUA user yang sudah LOGIN)
 // PENTING: Route notifikasi ditaruh di sini agar Admin & Kasir juga bisa fetch notifikasi tanpa error 403
 Route::middleware(['auth'])->group(function () {
-    
+
     // Route Fetch Notifikasi (Ajax) - Akses untuk semua role
     Route::get('/notifications/fetch', [NotificationController::class, 'fetch'])->name('notif.fetch');
-    
+
     // Redirect Home Default
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 
 // 4. Group Route ADMIN (Harus Login & Role Admin)
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-    
+
     // Dashboard Admin
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -82,7 +83,7 @@ Route::middleware(['auth', 'role:pembeli'])->group(function () {
     // Menu (Akses Khusus Pembeli)
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
-    
+
     // Feedback User
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
@@ -94,8 +95,8 @@ Route::middleware(['auth', 'role:pembeli'])->group(function () {
     Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
     Route::delete('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
-    
-    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index'); 
+
+    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::post('/checkout', [PembayaranController::class, 'checkout'])->name('checkout.process');
     Route::get('/pembayaran/berhasil', [PembayaranController::class, 'berhasil'])->name('pembayaran.berhasil');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'index'])->name('pembayaran.detail');
