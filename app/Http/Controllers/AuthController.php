@@ -4,16 +4,51 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
-    // Menampilkan form login (Menggunakan view AdminLTE yang sudah ada)
+    // --- SESUAI MODUL LARAVEL AUTH STEP 3 ---
+
+    // Menampilkan form registrasi
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    // Proses registrasi
+    public function register(Request $request)
+    {
+        // Validasi
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        // Buat user baru
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'pembeli' // Default role sesuai logika bisnis (pembeli)
+        ]);
+
+        // Login otomatis setelah register (Opsional di modul, tapi dipraktikkan)
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended('/menu');
+    }
+
+    // Menampilkan form login
     public function showLogin()
     {
         return view('auth.login'); 
     }
 
-    // Proses Login Manual
+    // Proses Login
     public function login(Request $request)
     {
         // Validasi input
@@ -22,20 +57,20 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // Coba login
+        // Coba login (Auth::attempt)
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            // Redirect berdasarkan Role (Sesuai Referensi PDF/Tugas)
-            $role = Auth::user()->role;
+            // Logika Redirect Berdasarkan Role (Implementasi Studi Kasus Tubes)
+            $userRole = Auth::user()->role;
 
-            switch ($role) {
+            switch ($userRole) {
                 case 'admin':
                     return redirect()->intended('/admin/dashboard');
                 case 'kasir':
-                    return redirect()->intended('/kasir'); // Ke dashboard kasir
+                    return redirect()->intended('/kasir');
                 case 'pembeli':
-                    return redirect()->intended('/menu'); // Sesuai request: pembeli akses menu
+                    return redirect()->intended('/menu');
                 default:
                     return redirect()->intended('/home');
             }

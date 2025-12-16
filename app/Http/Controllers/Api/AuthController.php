@@ -5,59 +5,70 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    /**
-     * Login API - Menghasilkan Token Sanctum
-     */
-    public function login(Request $request)
+    // REGISTER API (Sesuai Modul Step 6)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $user = Auth::user();
-            
-            // Buat Token sesuai Role agar bisa dilacak
-            $token = $user->createToken('auth_token')->plainTextToken;
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'pembeli', // Default role pembeli
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Login Berhasil',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token,
-                    'token_type' => 'Bearer'
-                ]
-            ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email atau Password salah'
-            ], 401);
-        }
+        // Membuat token langsung saat register (opsional, tapi umum di Sanctum)
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User berhasil dibuat',
+            'user' => $user,
+            'token' => $token
+        ], 201);
     }
 
-    /**
-     * Logout API - Menghapus Token
-     */
+    // LOGIN API
+    public function login(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Login gagal'], 401);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login berhasil',
+            'token' => $token,
+            'user' => $user
+        ], 200);
+    }
+
+    // LOGOUT API
     public function logout(Request $request)
     {
-        // Hapus token yang sedang digunakan saat ini
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'success' => true,
-            'message' => 'Logout Berhasil'
-        ]);
+            'status' => 'success',
+            'message' => 'Logout berhasil'
+        ], 200);
     }
 }

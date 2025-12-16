@@ -57,3 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 });
+
+// 1. Auth: Login & Register
+Route::post('/register', [AuthController::class, 'register']); 
+Route::post('/login', [AuthController::class, 'login']);

@@ -140,3 +140,11 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     Route::post('/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])->name('kasir.reservasi.cancel');
 });
 
+// Auth Manual (Login/Logout/Register)
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+// Tambahan Register
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
