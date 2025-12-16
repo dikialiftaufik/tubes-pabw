@@ -27,31 +27,33 @@ Route::post('/konfirmasi-bayar', [ApiPaymentController::class, 'confirmPayment']
 // === Group Middleware Auth (Harus Login) ===
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Logout
+    // Auth: Logout & User Info
     Route::post('/logout', [AuthController::class, 'logout']);
-    
-    // Cek User Profile
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
     // 2. FITUR UNTUK PEMBELI (Role: Pembeli)
     Route::middleware('role:pembeli')->group(function () {
+        // Menu untuk Pembeli (Read Only)
         Route::get('/pembeli/menu', [MenuController::class, 'index']);
     });
 
-    // 3. FITUR UNTUK ADMIN (Role: Admin)
+    // ----------------------------------------------------
+    // ROLE: ADMIN
+    // ----------------------------------------------------
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         
-        // A. Dashboard Admin
+        // 1. Dashboard Admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
-        // B. CRUD Menu
+        // 2. CRUD Menu
         Route::apiResource('menu', AdminMenuController::class);
 
-        // C. Report Admin
+        // 3. Report Admin (JSON, Excel, PDF)
         Route::get('/reports', [ReportController::class, 'index']);
         Route::get('/reports/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf']);
     });
+
 });
