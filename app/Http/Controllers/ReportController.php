@@ -15,18 +15,17 @@ class ReportController extends Controller
      */
     private function getSalesData()
     {
+        // PERBAIKAN DISINI: Mengubah 'status' menjadi 'status_pesanan'
         return Pesanan::with(['user', 'detailPesanan.menu'])
-            ->where('status', 'Selesai') 
+            ->where('status_pesanan', 'Selesai') 
             ->orderBy('created_at', 'desc')
             ->get();
     }
 
     /**
      * Menampilkan halaman laporan penjualan.
-     * Method ini diubah namanya dari 'index' menjadi 'salesReport'
-     * agar sesuai dengan route di web.php.
      */
-    public function salesReport() // <--- NAMA METHOD DIUBAH DISINI
+    public function salesReport()
     {
         $salesData = $this->getSalesData();
         return view('admin.reports', compact('salesData'));
