@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminMenuController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\ApiPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +15,16 @@ use App\Http\Controllers\Api\ReportController;
 |--------------------------------------------------------------------------
 */
 
-// 1. API Login (Untuk mendapatkan token akses)
+// 1. API Login (Public)
 Route::post('/login', [AuthController::class, 'login']);
 
-// Group Middleware Auth (Harus Login)
+// === API PEMBAYARAN (Punya Anda) ===
+// Ditaruh di luar 'auth:sanctum' agar bisa dites Postman (Simulasi Bank) tanpa perlu login token
+Route::get('/cek-status/{id}', [ApiPaymentController::class, 'checkStatus']);
+Route::post('/konfirmasi-bayar', [ApiPaymentController::class, 'confirmPayment']);
+
+
+// === Group Middleware Auth (Harus Login) ===
 Route::middleware('auth:sanctum')->group(function () {
 
     // Logout
@@ -29,7 +36,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // 2. FITUR UNTUK PEMBELI (Role: Pembeli)
-    // Akses menu untuk pembeli
     Route::middleware('role:pembeli')->group(function () {
         Route::get('/pembeli/menu', [MenuController::class, 'index']);
     });

@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
 
 class ApiPaymentController extends Controller
 {
     // 1. Cek Status Pesanan (GET)
-    // Sesuai materi: Mengembalikan response JSON, bukan View HTML
+   
     public function checkStatus($id)
     {
         $pesanan = Pesanan::find($id);

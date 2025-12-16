@@ -21,7 +21,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RiwayatController;
-use App\Http\Controllers\ApiPaymentController;
+
 
 // 1. Halaman Depan (Landing Page - Public)
 Route::get('/', function () {
@@ -130,6 +130,3 @@ Route::prefix('kasir')->middleware(['auth', 'role:kasir'])->group(function () {
     Route::post('/reservasi/cancel/{id}', [StatusReservasiController::class, 'cancel'])->name('kasir.reservasi.cancel');
 });
 
-// 7. Route Payment Gateway (API)
-Route::get('/cek-status/{id}', [ApiPaymentController::class, 'checkStatus']);
-Route::post('/konfirmasi-bayar', [ApiPaymentController::class, 'confirmPayment']);
