@@ -9,9 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    /* =========================================================
-     | USER - SIMPAN RESERVASI
-     ========================================================= */
+    
+     // USER - SIMPAN RESERVASI
     public function store(Request $request)
     {
         $request->validate([
@@ -41,18 +40,15 @@ class ReservationController extends Controller
         return redirect('/')->with('success', 'Reservasi berhasil dikirim');
     }
 
-    /* =========================================================
-     | ADMIN - LIST DATA
-     ========================================================= */
+    //| ADMIN - LIST DATA
     public function index()
     {
         $reservations = Reservation::orderBy('tgl_reservasi', 'desc')->get();
         return view('admin.reservations', compact('reservations'));
     }
 
-    /* =========================================================
-     | ADMIN - DETAIL (MODAL VIEW & EDIT)
-     ========================================================= */
+    // ADMIN - DETAIL (MODAL VIEW & EDIT)
+     
     public function show($id)
     {
         $reservation = Reservation::where('id_reservasi', $id)->firstOrFail();
@@ -67,9 +63,8 @@ class ReservationController extends Controller
         ]);
     }
 
-    /* =========================================================
-     | ADMIN - UPDATE DATA (AJAX)
-     ========================================================= */
+    // ADMIN - UPDATE DATA (AJAX)
+
     public function update(Request $request, $id)
     {
         $reservation = Reservation::where('id_reservasi', $id)->firstOrFail();
@@ -121,9 +116,7 @@ class ReservationController extends Controller
         ]);
     }
 
-    /* =========================================================
-     | ADMIN - DELETE
-     ========================================================= */
+    // ADMIN - DELETE
     public function destroy($id)
     {
         $reservation = Reservation::where('id_reservasi', $id)->firstOrFail();
