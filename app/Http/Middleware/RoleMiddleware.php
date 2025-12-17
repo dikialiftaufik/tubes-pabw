@@ -5,45 +5,34 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * $roles bisa berisi satu role atau beberapa role dipisah koma
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        // 1. Cek apakah user sudah login
-        \Illuminate\Support\Facades\Log::info('RoleMiddleware START', [
-            'url' => $request->url(),
-            'method' => $request->method(),
-            'session_id' => session()->getId(),
-            'has_session' => $request->hasSession(),
-            'auth_check' => Auth::check(),
-            'user_id' => Auth::id(),
-        ]);
-
         if (!Auth::check()) {
-            \Illuminate\Support\Facades\Log::warning('RoleMiddleware: NOT LOGGED IN. Redirecting to login', [
-                'url' => $request->url(),
-                'session_id' => session()->getId(),
-            ]);
-            return redirect('/login');
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $userRole = Auth::user()->role;
-        \Illuminate\Support\Facades\Log::info('RoleMiddleware: Check', ['role' => $userRole, 'required' => $roles, 'url' => $request->url()]);
-
-        // 3. Cek apakah role user ada di dalam daftar role yang diizinkan
-        // $roles dikirim dari route, misal: 'admin', 'pembeli'
-        if (in_array($userRole, $roles)) {
-            return $next($request);
+        $user = Auth::user();
+        
+        // Cek apakah role user ada di dalam daftar roles yang diizinkan
+        // Jika $roles dikirim sebagai string dipisah koma (seperti di modul)
+        if (is_string($roles)) {
+            $roles = explode(',', $roles);
         }
 
-        // 4. Jika role tidak sesuai, tampilkan error 403 (Forbidden)
-        abort(403, 'Anda tidak memiliki hak akses untuk halaman ini.');
+        if (!in_array($user->role, $roles)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda tdk ada hak akses.'
+            ], 403);
+        }
+
+        return $next($request);
     }
 }
