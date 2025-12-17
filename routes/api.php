@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminMenuController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ApiPaymentController;
+use App\Http\Controllers\Api\ReservationApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:pembeli')->group(function () {
         // Jika ingin spesifik path pembeli
         Route::get('/pembeli/menu', [MenuController::class, 'index']);
+        
+        // API Reservasi untuk Pembeli
+        Route::apiResource('reservations', ReservationApiController::class);
     });
 
     // ----------------------------------------------------
