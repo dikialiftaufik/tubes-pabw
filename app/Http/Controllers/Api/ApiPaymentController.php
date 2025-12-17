@@ -24,11 +24,12 @@ class ApiPaymentController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
-                'id' => $pesanan->id,
-                'user_id' => $pesanan->user_id,
+                'id' => $pesanan->id_pesanan,
+                'id_user' => $pesanan->id_user, // Corrected from id_pembeli
                 'tanggal' => $pesanan->tanggal,
-                'total_harga' => $pesanan->total_harga,
-                'status_pembayaran' => $pesanan->status, // pending/lunas/selesai
+                'total_harga' => $pesanan->total_hrg, // Corrected from total_harga
+                'status_pesanan' => $pesanan->status_pesanan,
+                'status_pembayaran' => $pesanan->status_pembayaran, // Added correct payment status
                 'metode_pembayaran' => $pesanan->metode_pembayaran,
                 'items' => $pesanan->detailPesanan->map(function ($detail) {
                     return [
@@ -50,7 +51,7 @@ class ApiPaymentController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'pesanan_id' => 'required|integer|exists:pesanan,id',
+            'pesanan_id' => 'required|integer|exists:pesanan,id_pesanan', // Corrected PK validation
             'metode_pembayaran' => 'nullable|in:cash,qris,transfer'
         ]);
 
@@ -65,16 +66,22 @@ class ApiPaymentController extends Controller
         }
 
         // Cek apakah sudah lunas
-        if ($pesanan->status === 'lunas' || $pesanan->status === 'selesai') {
+        if ($pesanan->status_pembayaran === 'lunas') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Pesanan sudah dikonfirmasi sebelumnya',
-                'current_status' => $pesanan->status
+                'current_status' => $pesanan->status_pembayaran
             ], 400);
         }
 
         // Update status pembayaran
-        $pesanan->status = 'lunas';
+        $pesanan->status_pembayaran = 'lunas'; // Corrected: update payment status
+
+        // Update status pesanan jika statusnya masih pending
+        if ($pesanan->status_pesanan == 'pending') {
+            $pesanan->status_pesanan = 'diproses';
+        }
+
         if (isset($validated['metode_pembayaran'])) {
             $pesanan->metode_pembayaran = $validated['metode_pembayaran'];
         }
@@ -84,9 +91,10 @@ class ApiPaymentController extends Controller
             'status' => 'success',
             'message' => 'Pembayaran berhasil dikonfirmasi!',
             'data' => [
-                'pesanan_id' => $pesanan->id,
-                'status_baru' => $pesanan->status,
-                'total_dibayar' => $pesanan->total_harga,
+                'pesanan_id' => $pesanan->id_pesanan,
+                'status_pembayaran' => $pesanan->status_pembayaran,
+                'status_pesanan' => $pesanan->status_pesanan,
+                'total_dibayar' => $pesanan->total_hrg, // Corrected total_harga
                 'metode_pembayaran' => $pesanan->metode_pembayaran,
                 'waktu_konfirmasi' => now()->format('Y-m-d H:i:s')
             ]

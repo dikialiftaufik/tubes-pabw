@@ -9,7 +9,7 @@ class StatusReservasiController extends Controller
 {
     public function index()
     {
-        $reservasi = Reservation::latest()->get();
+        $reservasi = Reservation::orderBy('created_at', 'desc')->get();
         return view('kasir.status-reservasi', compact('reservasi'));
     }
 
@@ -17,12 +17,14 @@ class StatusReservasiController extends Controller
     {
         $reservasi = Reservation::findOrFail($id);
 
-        if ($reservasi->status === 'pending') {
-            $reservasi->status = 'confirmed';
-        } elseif ($reservasi->status === 'confirmed') {
-            $reservasi->status = 'done';
+        // Status flow: pending -> diterima -> selesai
+        if ($reservasi->status_reservasi === 'pending') {
+            $reservasi->status_reservasi = 'diterima';
+        } elseif ($reservasi->status_reservasi === 'diterima') {
+            $reservasi->status_reservasi = 'selesai';
         } else {
-            $reservasi->status = 'pending';
+            // Optional loop back or stay
+            $reservasi->status_reservasi = 'pending';
         }
 
         $reservasi->save();
@@ -33,7 +35,7 @@ class StatusReservasiController extends Controller
     public function cancel($id)
     {
         $reservasi = Reservation::findOrFail($id);
-        $reservasi->status = 'cancelled';
+        $reservasi->status_reservasi = 'batal';
         $reservasi->save();
 
         return redirect()->back()->with('success', 'Reservasi berhasil dibatalkan!');

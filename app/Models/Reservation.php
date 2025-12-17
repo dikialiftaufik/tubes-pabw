@@ -6,21 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
-    protected $table = 'reservations'; // sesuai migration kamu
+    protected $table = 'reservasi'; // Table yang benar
+    protected $primaryKey = 'id_reservasi'; // Primary key yang benar
 
     protected $fillable = [
-        'user_id',
-        'name',
-        'time',
-        'date',
-        'people',
-        'message',
-        'status',
+        'id_user',
+        'nama_pemesan',
+        'jml_org',
+        'tgl_reservasi',
+        'jam_mulai',
+        'jam_selesai',
+        'status_reservasi',
     ];
 
-    // relasi ke user (opsional)
+    // relasi ke user
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'id_user', 'id');
     }
 }
