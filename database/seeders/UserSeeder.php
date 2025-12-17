@@ -10,46 +10,58 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Kasir Demo',
-            'email' => 'kasir@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'kasir',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'kasir@example.com'],
+            [
+                'name' => 'Kasir Demo',
+                'password' => Hash::make('password'),
+                'role' => 'kasir',
+            ]
+        );
 
-        User::create([
-            'name' => 'Pembeli 1',
-            'email' => 'pembeli1@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'pembeli',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'pembeli1@example.com'],
+            [
+                'name' => 'Pembeli 1',
+                'password' => Hash::make('password'),
+                'role' => 'pembeli',
+            ]
+        );
 
-        User::create([
-            'name' => 'Pembeli 2',
-            'email' => 'pembeli2@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'pembeli',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'pembeli2@example.com'],
+            [
+                'name' => 'Pembeli 2',
+                'password' => Hash::make('password'),
+                'role' => 'pembeli',
+            ]
+        );
 
-        User::create([
-            'name' => 'Admin Demo',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin Demo',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
 
-        User::create([
-            'name' => 'Kasir Ega',
-            'email' => 'egafiandra@gmail.com',
-            'password' => Hash::make('ega123'),
-            'role' => 'kasir',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'egafiandra@gmail.com'],
+            [
+                'name' => 'Kasir Ega',
+                'password' => Hash::make('ega123'),
+                'role' => 'kasir',
+            ]
+        );
 
-        User::create([
-            'name' => 'egapembeli',
-            'email' => 'pembeli@gmail.com',
-            'password' => Hash::make('pembeli123'),
-            'role' => 'pembeli',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'pembeli@gmail.com'],
+            [
+                'name' => 'egapembeli',
+                'password' => Hash::make('pembeli123'),
+                'role' => 'pembeli',
+            ]
+        );
     }
 }

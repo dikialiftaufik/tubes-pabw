@@ -23,6 +23,7 @@ class DashboardKasirController extends Controller
         // === DATA ASLI DARI DATABASE ===
         $stokMenu = Menu::count();
         $pesananMasuk = Pesanan::count();
+        // PERBAIKAN: Tabel reservations sudah ada (reservasi)
         $reservasiMasuk = Reservation::count();
 
         return view('kasir.dashboard', compact(
@@ -59,7 +60,8 @@ class DashboardKasirController extends Controller
         $old = session('foto_kasir');
         if ($old && $old !== 'default.png') {
             $oldPath = public_path('uploads/kasir/' . $old);
-            if (file_exists($oldPath)) unlink($oldPath);
+            if (file_exists($oldPath))
+                unlink($oldPath);
         }
 
         // simpan foto baru
@@ -77,7 +79,8 @@ class DashboardKasirController extends Controller
 
         if ($old && $old !== 'default.png') {
             $oldPath = public_path('uploads/kasir/' . $old);
-            if (file_exists($oldPath)) unlink($oldPath);
+            if (file_exists($oldPath))
+                unlink($oldPath);
         }
 
         session(['foto_kasir' => 'default.png']);

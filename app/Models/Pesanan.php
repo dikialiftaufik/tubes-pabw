@@ -10,31 +10,31 @@ class Pesanan extends Model
     use HasFactory;
 
     protected $table = 'pesanan';
-    
-    // TAMBAHKAN INI: Karena primary key di DB adalah 'id_pesanan', bukan 'id'
+
+    // PENTING: Primary key di database baru adalah 'id_pesanan'
     protected $primaryKey = 'id_pesanan';
 
-    // PERBAIKAN: Sesuaikan dengan nama kolom asli di database (tubes-pabw.sql)
+    // Kolom sesuai tubes-pabw (4).sql
     protected $fillable = [
-        'id_user',         // Bukan 'user_id'
-        'id_kasir', 
+        'id_user',          // Menggantikan user_id
+        'id_kasir',
         'id_reservasi',
-        'tanggal', 
-        'total_hrg',       // Bukan 'total_harga'
-        'status_pesanan',  // Bukan 'status'
+        'tanggal',
+        'total_hrg',        // Menggantikan total_harga
+        'status_pesanan',   // Menggantikan status
         'status_pembayaran',
         'metode_pembayaran'
     ];
 
     public function user()
     {
-        // PERBAIKAN: Foreign key di tabel pesanan adalah 'id_user'
+        // Relasi ke tabel users (id) melalui kolom id_user di tabel pesanan
         return $this->belongsTo(User::class, 'id_user', 'id');
     }
 
     public function detailPesanan()
     {
-        // PERBAIKAN: Foreign key di tabel detail_pesanan adalah 'id_pesanan'
+        // Relasi ke detail_pesanan melalui id_pesanan
         return $this->hasMany(DetailPesanan::class, 'id_pesanan', 'id_pesanan');
     }
 

@@ -23,18 +23,19 @@ class StatusPesananController extends Controller
         // Atau sesuaikan dengan request input jika menggunakan dropdown
 
         if ($request->has('status')) {
-            $pesanan->status = $request->status;
+            $pesanan->status_pesanan = $request->status;
         } else {
             // Default toggle logic jika tidak ada input spesifik
-            switch ($pesanan->status) {
+            switch ($pesanan->status_pesanan) {
                 case 'pending':
-                    $pesanan->status = 'disiapkan';
+                case 'diproses':
+                    $pesanan->status_pesanan = 'disiapkan';
                     break;
                 case 'disiapkan':
-                    $pesanan->status = 'selesai';
+                    $pesanan->status_pesanan = 'selesai';
                     break;
                 default:
-                    $pesanan->status = 'pending';
+                    $pesanan->status_pesanan = 'pending';
                     break;
             }
         }
