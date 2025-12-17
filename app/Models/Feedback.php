@@ -9,40 +9,52 @@ class Feedback extends Model
 {
     use HasFactory;
 
-    protected $table = 'feeddback';
+    protected $table = 'feedback';
+    protected $primaryKey = 'id_feedback';
+    public $timestamps = false;
 
-    /**
-     * Kolom yang dapat diisi secara massal.
-     */
     protected $fillable = [
-        'name',
-        'judul',
-        'pesan',
-        'created_at',
-        'updated_at'
+        'id_user',
+        'tgl_masukan',
+        'pesan_masukan',
+        'kategori_masukan',
+        'bukti_foto'
     ];
 
-    /**
-     * Kolom yang harus di-cast ke tipe data tertentu.
-     */
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    /* =======================
+       ACCESSOR (UNTUK VIEW)
+       ======================= */
 
-    /**
-     * Accessor untuk nama_user (alias dari name)
-     */
-    public function getNamaUserAttribute()
+    public function getIdAttribute()
     {
-        return $this->name;
+        return $this->id_feedback;
     }
 
-    /**
-     * Accessor untuk tanggal (alias dari created_at)
-     */
-    public function getTanggalAttribute()
+    public function getNameAttribute()
     {
-        return $this->created_at;
+        return $this->kategori_masukan;
+    }
+
+    public function getJudulAttribute()
+    {
+        return $this->kategori_masukan;
+    }
+
+    public function getPesanAttribute()
+    {
+        return $this->pesan_masukan;
+    }
+
+    public function getCreatedAtAttribute()
+    {
+        return $this->tgl_masukan;
+    }
+
+    /* =======================
+       RELATION
+       ======================= */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 }

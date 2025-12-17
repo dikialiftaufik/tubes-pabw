@@ -3,80 +3,58 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    // landing page
     public function store(Request $request)
-    {
-        $request->validate([
-            'name'   => 'required',
-            'time'   => 'required',
-            'date'   => 'required',
-            'people' => 'required|integer|min:1',
-            'message'=> 'nullable'
-        ]);
+{
+    $request->validate([
+        'jml_org'       => 'required|integer|min:1',
+        'tgl_reservasi' => 'required|date',
+        'jam_mulai'     => 'required',
+    ]);
 
-        Reservation::create([
-            'user_id' => Auth::check() ? Auth::id() : null,
-            'name'    => $request->name,
-            'time'    => $request->time,
-            'date'    => $request->date,
-            'people'  => $request->people,
-            'message' => $request->message,
-            'status'  => 'Pending'
-        ]);
+    Reservation::create([
+        'id_user'          => Auth::id(),
+        'nama_pemesan'     => Auth::user()->name,
+        'jml_org'          => $request->jml_org,
+        'tgl_reservasi'    => $request->tgl_reservasi,
+        'jam_mulai'        => $request->jam_mulai,
+        'status_reservasi' => 'pending',
+    ]);
 
-        return redirect('/')->with('success', 'Reservasi Berhasil Dikirim!');
+    return redirect('/')->with('success', 'Reservasi berhasil dikirim');
     }
 
-    // dashboard admin
     public function index()
     {
-        $reservations = Reservation::orderBy('date', 'asc')->get();
+        $reservations = Reservation::orderBy('tgl_reservasi')->get();
         return view('admin.reservations', compact('reservations'));
     }
 
-    // view 
     public function show($id)
     {
         return Reservation::findOrFail($id);
     }
 
-    // update
     public function update(Request $request, $id)
     {
-        $reservation = Reservation::findOrFail($id);
-
-        $request->validate([
-            'name'   => 'required|string',
-            'date'   => 'required|date',
-            'time'   => 'required',
-            'people' => 'required|integer',
-            'message'=> 'nullable|string',
-            'status' => 'required|string'
-        ]);
-
-        $reservation->update([
-            'name'    => $request->name,
-            'date'    => $request->date,
-            'time'    => $request->time,
-            'people'  => $request->people,
-            'message' => $request->message,
-            'status'  => $request->status
+        Reservation::findOrFail($id)->update([
+            'nama_pemesan'    => $request->nama_pemesan,
+            'jml_org'         => $request->jml_org,
+            'tgl_reservasi'   => $request->tgl_reservasi,
+            'jam_mulai'       => $request->jam_mulai,
+            'status_reservasi'=> strtolower($request->status_reservasi)
         ]);
 
         return response()->json(['success' => true]);
     }
 
-    // delete
     public function destroy($id)
     {
-        $reservation = Reservation::findOrFail($id);
-        $reservation->delete();
-
+        Reservation::findOrFail($id)->delete();
         return response()->json(['success' => true]);
     }
 }
