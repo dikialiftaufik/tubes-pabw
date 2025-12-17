@@ -3,72 +3,59 @@
 @section('title', 'Manajemen Feedback')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Manajemen Feedback</h1>
+<h1 class="m-0 text-dark">Manajemen Feedback</h1>
 @stop
 
 @section('content')
 <div class="card">
     <div class="card-body">
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
 
         <div class="table-responsive">
-            <table id="feedback-table" class="table table-bordered table-striped table-hover" style="width:100%">
-                <thead class="thead-light text-center">
+            <table id="feedback-table" class="table table-bordered table-striped table-hover">
+                <thead class="text-center">
                     <tr>
-                        <th style="width: 5%">ID</th>
-                        <th>Nama</th>
-                        <th>Judul Masukan</th>
+                        <th>ID</th>
+                        <th>Kategori Masukan</th>
                         <th>Pesan Masukan</th>
-                        <th style="width: 15%">Tanggal</th>
-                        <th style="width: 10%">Aksi</th>
+                        <th>Tanggal</th>
+                        <th width="120">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($feedbackData as $fb)
+                @forelse ($feedbackData as $fb)
                     <tr>
-                        <td class="text-center">{{ $fb->id }}</td>
-                        <td>{{ $fb->name }}</td>
-                        <td>{{ $fb->judul }}</td>
-                        <td>{{ Str::limit($fb->pesan, 50, '...') }}</td>
-                        <td class="text-center">{{ \Carbon\Carbon::parse($fb->created_at)->format('d M Y, H:i') }}</td>
-
-                        <!-- Aksi -->
+                        <td class="text-center">{{ $fb->id_feedback }}</td>
+                        <td>{{ $fb->kategori_masukan }}</td>
+                        <td>{{ Str::limit($fb->pesan_masukan, 50) }}</td>
+                        <td class="text-center">{{ $fb->tgl_masukan }}</td>
                         <td class="text-center">
-                            <button class="btn btn-info btn-sm btnView" 
-                                data-id="{{ $fb->id }}"
-                                data-nama="{{ $fb->name }}"
-                                data-judul="{{ $fb->judul }}"
-                                data-pesan="{{ $fb->pesan }}"
-                                data-tanggal="{{ \Carbon\Carbon::parse($fb->created_at)->format('d M Y, H:i') }}">
+
+                            <button class="btn btn-info btn-sm btnView"
+                                data-kategori="{{ $fb->kategori_masukan }}"
+                                data-pesan="{{ $fb->pesan_masukan }}"
+                                data-tanggal="{{ $fb->tgl_masukan }}">
                                 <i class="fas fa-eye"></i>
                             </button>
 
                             <button class="btn btn-warning btn-sm btnEdit"
-                                data-id="{{ $fb->id }}"
-                                data-nama="{{ $fb->name }}"
-                                data-judul="{{ $fb->judul }}"
-                                data-pesan="{{ $fb->pesan }}">
+                                data-id="{{ $fb->id_feedback }}"
+                                data-kategori="{{ $fb->kategori_masukan }}"
+                                data-pesan="{{ $fb->pesan_masukan }}">
                                 <i class="fas fa-edit"></i>
                             </button>
 
                             <button class="btn btn-danger btn-sm btnDelete"
-                                data-id="{{ $fb->id }}">
+                                data-id="{{ $fb->id_feedback }}">
                                 <i class="fas fa-trash"></i>
                             </button>
+
                         </td>
                     </tr>
-                    @empty
+                @empty
                     <tr>
-                        <td colspan="6" class="text-center">Tidak ada data feedback.</td>
+                        <td colspan="5" class="text-center">Tidak ada data</td>
                     </tr>
-                    @endforelse
+                @endforelse
                 </tbody>
             </table>
         </div>
@@ -76,67 +63,50 @@
     </div>
 </div>
 
-{{-- MODAL VIEW DETAIL --}}
-<div class="modal fade" id="modalView" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+{{-- ================= MODAL VIEW ================= --}}
+<div class="modal fade" id="modalView">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Detail Feedback</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5>Detail Feedback</h5>
             </div>
             <div class="modal-body">
-                <p><strong>ID:</strong> <span id="viewId"></span></p>
-                <p><strong>Nama:</strong> <span id="viewNama"></span></p>
-                <p><strong>Judul:</strong> <span id="viewJudul"></span></p>
-                <p><strong>Pesan:</strong></p>
-                <div class="border p-2 rounded">
-                    <p id="viewPesan"></p>
-                </div>
-                <p class="mt-2"><strong>Tanggal:</strong> <span id="viewTanggal"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <p><b>Kategori Masukan:</b> <span id="viewKategori"></span></p>
+                <p><b>Pesan Masukan:</b></p>
+                <p id="viewPesan"></p>
+                <p><b>Tanggal:</b> <span id="viewTanggal"></span></p>
             </div>
         </div>
     </div>
 </div>
 
-{{-- MODAL EDIT --}}
-<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <form method="POST" id="formEdit">
+{{-- ================= MODAL EDIT ================= --}}
+<div class="modal fade" id="modalEdit">
+    <div class="modal-dialog">
+        <form id="formEdit">
             @csrf
             @method('PUT')
             <div class="modal-content">
-                <div class="modal-header bg-warning text-white">
-                    <h5 class="modal-title">Edit Feedback</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="modal-header bg-warning">
+                    <h5>Edit Feedback</h5>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="id" id="editId">
-                    
+
+                    <input type="hidden" id="editId">
+
                     <div class="form-group">
-                        <label for="editNama">Nama User</label>
-                        <input type="text" id="editNama" name="nama_user" class="form-control" required>
+                        <label>Kategori Masukan</label>
+                        <input type="text" id="editKategori" name="kategori_masukan" class="form-control">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="editJudul">Judul</label>
-                        <input type="text" id="editJudul" name="judul" class="form-control" required>
+                        <label>Pesan Masukan</label>
+                        <textarea id="editPesan" name="pesan_masukan" class="form-control"></textarea>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="editPesan">Pesan</label>
-                        <textarea id="editPesan" name="pesan" class="form-control" rows="4" required></textarea>
-                    </div>
+
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <button class="btn btn-primary">Simpan</button>
                 </div>
             </div>
         </form>
@@ -144,91 +114,56 @@
 </div>
 @stop
 
-@section('css')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-@stop
-
 @section('js')
 <script>
-$(document).ready(function(){
-    // CSRF Token setup untuk AJAX
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
+$(function(){
 
-    // VIEW DETAIL
-    $(document).on('click', '.btnView', function(){
-        $("#viewId").text($(this).data("id"));
-        $("#viewNama").text($(this).data("nama"));
-        $("#viewJudul").text($(this).data("judul"));
-        $("#viewPesan").text($(this).data("pesan"));
-        $("#viewTanggal").text($(this).data("tanggal"));
-        $("#modalView").modal("show");
+    // VIEW
+    $('.btnView').click(function(){
+        $('#viewKategori').text($(this).data('kategori'));
+        $('#viewPesan').text($(this).data('pesan'));
+        $('#viewTanggal').text($(this).data('tanggal'));
+        $('#modalView').modal('show');
     });
 
     // EDIT
-    $(document).on('click', '.btnEdit', function(){
-        let id = $(this).data("id");
-        
-        $("#editId").val(id);
-        $("#editNama").val($(this).data("nama"));
-        $("#editJudul").val($(this).data("judul"));
-        $("#editPesan").val($(this).data("pesan"));
-        
-        // Set form action
-        $("#formEdit").attr("action", "/admin/feedback/" + id);
-        $("#modalEdit").modal("show");
+    $('.btnEdit').click(function(){
+        $('#editId').val($(this).data('id'));
+        $('#editKategori').val($(this).data('kategori'));
+        $('#editPesan').val($(this).data('pesan'));
+        $('#modalEdit').modal('show');
     });
 
-    // Handle form submit untuk edit
-    $("#formEdit").submit(function(e){
+    // UPDATE
+    $('#formEdit').submit(function(e){
         e.preventDefault();
-        
+        let id = $('#editId').val();
+
         $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
+            url: '/admin/feedback/' + id,
+            method: 'POST',
             data: $(this).serialize(),
-            success: function(response){
-                $("#modalEdit").modal("hide");
-                alert(response.message);
+            success: function(){
                 location.reload();
-            },
-            error: function(xhr){
-                alert('Terjadi kesalahan saat menyimpan data.');
-                console.error(xhr.responseText);
             }
         });
     });
 
     // DELETE
-    $(document).on('click', '.btnDelete', function(){
-        let id = $(this).data("id");
-        let row = $(this).closest('tr');
-        
-        if(confirm("Yakin ingin menghapus feedback ini?")){
-            $.ajax({
-                url: "/admin/feedback/" + id,
-                type: 'DELETE',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response){
-                    if(response.success){
-                        row.fadeOut(300, function(){
-                            $(this).remove();
-                        });
-                        alert(response.message);
-                    }
-                },
-                error: function(xhr){
-                    alert('Terjadi kesalahan saat menghapus data.');
-                    console.error(xhr.responseText);
-                }
-            });
-        }
+    $('.btnDelete').click(function(){
+        if(!confirm('Hapus feedback?')) return;
+        let id = $(this).data('id');
+
+        $.ajax({
+            url: '/admin/feedback/' + id,
+            method: 'POST',
+            data: {_method:'DELETE', _token:'{{ csrf_token() }}'},
+            success: function(){
+                location.reload();
+            }
+        });
     });
+
 });
 </script>
 @stop

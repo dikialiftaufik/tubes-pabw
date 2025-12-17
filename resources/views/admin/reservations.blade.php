@@ -17,7 +17,6 @@
                         <th>Tanggal</th>
                         <th>Waktu</th>
                         <th>Jumlah Orang</th>
-                        <th>Catatan</th>
                         <th>Status</th>
                         <th width="130px">Aksi</th>
                     </tr>
@@ -30,7 +29,6 @@
                             <td>{{ $reservation->date }}</td>
                             <td>{{ $reservation->time }}</td>
                             <td>{{ $reservation->people }}</td>
-                            <td>{{ $reservation->message }}</td>
                             <td>
                                 @if ($reservation->status == 'Confirmed')
                                     <span class="badge bg-success">Confirmed</span>
@@ -72,7 +70,6 @@
                     <p><b>Tanggal:</b> <span id="viewDate"></span></p>
                     <p><b>Waktu:</b> <span id="viewTime"></span></p>
                     <p><b>Jumlah Orang:</b> <span id="viewPeople"></span></p>
-                    <p><b>Catatan:</b> <span id="viewMessage"></span></p>
                     <p><b>Status:</b> <span id="viewStatus"></span></p>
                 </div>
 
@@ -120,11 +117,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Catatan</label>
-                            <textarea id="editMessage" name="message" class="form-control"></textarea>
-                        </div>
-
-                        <div class="form-group">
                             <label>Status</label>
                             <select id="editStatus" name="status" class="form-control">
                                 <option value="Pending">Pending</option>
@@ -158,7 +150,6 @@
             $('#viewDate').text(data.date);
             $('#viewTime').text(data.time);
             $('#viewPeople').text(data.people);
-            $('#viewMessage').text(data.message);
             $('#viewStatus').text(data.status);
 
             $('#viewModal').modal('show');
@@ -173,7 +164,6 @@
             $('#editDate').val(data.date);
             $('#editTime').val(data.time);
             $('#editPeople').val(data.people);
-            $('#editMessage').val(data.message);
             $('#editStatus').val(data.status);
 
             $('#editModal').modal('show');

@@ -3,80 +3,87 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation;
+use App\Models\Notifikasi;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    // landing page
     public function store(Request $request)
     {
         $request->validate([
-            'name'   => 'required',
-            'time'   => 'required',
-            'date'   => 'required',
-            'people' => 'required|integer|min:1',
-            'message'=> 'nullable'
+            'jml_org'       => 'required|integer|min:1',
+            'tgl_reservasi' => 'required|date',
+            'jam_mulai'     => 'required',
         ]);
 
-        Reservation::create([
-            'user_id' => Auth::check() ? Auth::id() : null,
-            'name'    => $request->name,
-            'time'    => $request->time,
-            'date'    => $request->date,
-            'people'  => $request->people,
-            'message' => $request->message,
-            'status'  => 'Pending'
+        $reservation = Reservation::create([
+            'id_user'          => Auth::id(),
+            'nama_pemesan'     => Auth::user()->name,
+            'jml_org'          => $request->jml_org,
+            'tgl_reservasi'    => $request->tgl_reservasi,
+            'jam_mulai'        => $request->jam_mulai,
+            'status_reservasi' => 'pending',
         ]);
 
-        return redirect('/')->with('success', 'Reservasi Berhasil Dikirim!');
+        // Buat notifikasi untuk user
+        Notifikasi::create([
+            'id_user'           => Auth::id(),
+            'judul_notifikasi'  => 'Reservasi Baru',
+            'pesan_notifikasi'  => 'Reservasi Anda untuk tanggal ' . $request->tgl_reservasi . ' jam ' . $request->jam_mulai . ' sedang menunggu konfirmasi (Pending)',
+        ]);
+
+        return redirect('/')->with('success', 'Reservasi berhasil dikirim');
     }
 
-    // dashboard admin
     public function index()
     {
-        $reservations = Reservation::orderBy('date', 'asc')->get();
+        $reservations = Reservation::orderBy('tgl_reservasi')->get();
         return view('admin.reservations', compact('reservations'));
     }
 
-    // view 
     public function show($id)
     {
         return Reservation::findOrFail($id);
     }
 
-    // update
     public function update(Request $request, $id)
     {
         $reservation = Reservation::findOrFail($id);
-
-        $request->validate([
-            'name'   => 'required|string',
-            'date'   => 'required|date',
-            'time'   => 'required',
-            'people' => 'required|integer',
-            'message'=> 'nullable|string',
-            'status' => 'required|string'
-        ]);
-
+        $oldStatus = $reservation->status_reservasi;
+        
         $reservation->update([
-            'name'    => $request->name,
-            'date'    => $request->date,
-            'time'    => $request->time,
-            'people'  => $request->people,
-            'message' => $request->message,
-            'status'  => $request->status
+            'nama_pemesan'    => $request->nama_pemesan,
+            'jml_org'         => $request->jml_org,
+            'tgl_reservasi'   => $request->tgl_reservasi,
+            'jam_mulai'       => $request->jam_mulai,
+            'status_reservasi'=> strtolower($request->status_reservasi)
         ]);
+
+        // Jika status berubah, buat notifikasi baru untuk user
+        $newStatus = strtolower($request->status_reservasi);
+        if ($oldStatus !== $newStatus && $reservation->id_user) {
+            $statusLabel = ucfirst($newStatus);
+            $statusMessage = match($newStatus) {
+                'confirmed' => 'Reservasi Anda telah DIKONFIRMASI',
+                'cancelled' => 'Reservasi Anda telah DIBATALKAN',
+                default => 'Status reservasi Anda: ' . $statusLabel
+            };
+
+            Notifikasi::create([
+                'id_user'           => $reservation->id_user,
+                'judul_notifikasi'  => 'Update Reservasi',
+                'pesan_notifikasi'  => $statusMessage . ' untuk tanggal ' . $reservation->tgl_reservasi . ' jam ' . $reservation->jam_mulai,
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }
 
-    // delete
     public function destroy($id)
     {
-        $reservation = Reservation::findOrFail($id);
-        $reservation->delete();
-
+        Reservation::findOrFail($id)->delete();
         return response()->json(['success' => true]);
     }
 }
+

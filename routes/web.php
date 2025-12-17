@@ -51,6 +51,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 
+// Feedback
+/* ===== USER ===== */
+Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
+/* ===== ADMIN ===== */
+Route::get('/admin/feedback', [FeedbackController::class, 'adminIndex']);
+Route::put('/admin/feedback/{id}', [FeedbackController::class, 'update']);
+Route::delete('/admin/feedback/{id}', [FeedbackController::class, 'destroy']);
+
+
 // 4. Group Route ADMIN (Harus Login & Role Admin)
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
@@ -74,7 +85,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('notifications', NotificationController::class, ['as' => 'admin']);
 
     // Fitur Lain Admin
-    Route::get('/feedback', [AdminFeedbackController::class, 'index']);
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::get('/reservations/{id}', [ReservationController::class, 'show']);
     Route::put('/reservations/{id}', [ReservationController::class, 'update']);
@@ -89,11 +99,6 @@ Route::middleware(['auth', 'role:pembeli'])->group(function () {
     // Menu (Akses Khusus Pembeli)
     Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
     Route::get('/menu/detail/{id}', [MenuController::class, 'detail'])->name('menu.detail');
-
-
-    // Feedback User
-    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
-    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
     // Reservasi User
     Route::post('/reservasi/simpan', [ReservationController::class, 'store'])->name('reservasi.simpan');

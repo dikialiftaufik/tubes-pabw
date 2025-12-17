@@ -171,68 +171,121 @@
     </div>
   </section>
 
-  {{-- Reservation Section --}}
-  <section id="reservation">
-    <div class="container" style="max-width: 1800px;">
-      <div class="text-center mb-5">
-        <h2 class="fw-bold text-warning">Reservasi Meja</h2>
-        <p>Pesan meja Anda sekarang dan nikmati pengalaman kuliner istimewa.</p>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <form action="{{ route('reservasi.simpan') }}" method="POST" class="card shadow-sm p-4 border-0">
-            @csrf
-            <div class="row g-3">
+{{-- RESERVASI --}}
+<section id="reservation" class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="text-warning fw-bold">Reservasi Meja</h2>
+    </div>
 
-                <div class="col-md-6">
-                    <label for="name" class="form-label">Nama</label>
-                    <input type="text" id="name" name="name"
-                        class="form-control"
-                        value="{{ Auth::check() ? Auth::user()->name : '' }}"
-                        placeholder="Nama lengkap" required readonly>
-                </div>
+    {{-- JIKA BELUM LOGIN --}}
+    @guest
 
-                <div class="col-md-6">
-                    <label for="time" class="form-label">Jam</label>
-                    <input type="time" id="time" name="time" class="form-control" required>
-                </div>
+      <form action="{{ route('reservasi.simpan') }}" method="POST" class="card p-4 border-0">
+          @csrf
 
-                <div class="col-md-6">
-                    <label for="date" class="form-label">Tanggal</label>
-                    <input type="date" id="date" name="date" class="form-control" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="people" class="form-label">Jumlah Orang</label>
-                    <input type="number" id="people" name="people" class="form-control" min="1" required>
-                </div>
-
-                <div class="col-12">
-                    <label for="message" class="form-label">Catatan</label>
-                    <textarea id="message" name="message" class="form-control" rows="3"></textarea>
-                </div>
-
-                <div class="col-12 text-center">
-                    <button type="submit" class="btn btn-warning mt-3 px-5">Kirim</button>
-                </div>
-
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label ">Nama</label>
+              <input type="text"
+                     class="form-control"
+                     value="Otomatis Isi Username"
+                     readonly>
             </div>
-        </form>
-        </div>
-      </div>
 
-      {{-- Google Maps --}}
-      <div class="mt-5 text-center">
-        <h4 class="fw-bold mb-3 text-warning">Lokasi Kami</h4>
-        <div class="ratio ratio-16x9">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.3451322296482!2d107.63457970949146!3d-6.968548693002976!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e9b22a7c041d%3A0xf61de0f3037c02f0!2sSate%20Solo%20Pak%20Komar!5e0!3m2!1sid!2sid!4v1760926790037!5m2!1sid!2sid"
+            <div class="col-md-6">
+              <label class="form-label ">Jam Mulai</label>
+              <input type="time" name="jam_mulai" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label ">Tanggal</label>
+              <input type="date" name="tgl_reservasi" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label ">Jumlah Orang</label>
+              <input type="number" name="jml_org" class="form-control" min="1" required>
+            </div>
+
+            <input type="hidden" name="status_reservasi" value="pending">
+
+            <div class="col-12 text-center">
+              <button class="btn btn-warning px-5 mt-3">
+                Kirim Reservasi
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div class="alert alert-warning text-center">
+        Silakan <a href="{{ route('login') }}">login</a> terlebih dahulu untuk melakukan reservasi.
+      </div>
+    @endguest
+
+    {{-- JIKA SUDAH LOGIN --}}
+    @auth
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form action="{{ route('reservasi.simpan') }}" method="POST" class="card p-4 border-0">
+          @csrf
+
+          {{-- USER ID --}}
+          <input type="hidden" name="id_user" value="{{ Auth::id() }}">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label ">Nama</label>
+              <input type="text"
+                     class="form-control"
+                     value="{{ Auth::user()->name }}"
+                     readonly>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label ">Jam Mulai</label>
+              <input type="time" name="jam_mulai" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label ">Tanggal</label>
+              <input type="date" name="tgl_reservasi" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label ">Jumlah Orang</label>
+              <input type="number" name="jml_org" class="form-control" min="1" required>
+            </div>
+
+            <input type="hidden" name="status_reservasi" value="pending">
+
+            <div class="col-12 text-center">
+              <button class="btn btn-warning px-5 mt-3">
+                Kirim Reservasi
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    @endauth
+  </div>
+</section>
+
+{{-- Google Maps --}}
+<section>
+  <div class="mt-5 text-center">
+    <h4 class="fw-bold mb-3 text-warning">Lokasi Kami</h4>
+    <div class="ratio ratio-16x9">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.3451322296482!2d107.63457970949146!3d-6.968548693002976!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e9b22a7c041d%3A0xf61de0f3037c02f0!2sSate%20Solo%20Pak%20Komar!5e0!3m2!1sid!2sid!4v1760926790037!5m2!1sid!2sid"
             style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>
       </div>
-    </div>
-  </section>
+  </div>
+</section>
+
 
   @push('scripts')
   <script>
