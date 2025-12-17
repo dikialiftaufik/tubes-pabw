@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AdminMenuController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ApiPaymentController;
 use App\Http\Controllers\Api\ReservationApiController;
+use App\Http\Controllers\Api\FeedbackApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,9 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // API Reservasi untuk Pembeli
         Route::apiResource('reservations', ReservationApiController::class);
+        
+        // API Feedback untuk Pembeli
+        Route::apiResource('feedback', FeedbackApiController::class);
     });
 
     // ----------------------------------------------------
