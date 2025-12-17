@@ -4,26 +4,34 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Menu;
 use App\Models\Pesanan;
 use App\Models\User;
+use App\Models\Menu;
 
 class AdminDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Statistik sederhana untuk dashboard
-        $data = [
-            'total_menu' => Menu::count(),
-            'total_pesanan' => Pesanan::count(),
-            'total_pembeli' => User::where('role', 'pembeli')->count(),
-            'pendapatan_total' => Pesanan::where('status_pesanan', 'Selesai')->sum('total_harga')
-        ];
+        $user = $request->user();
+        
+        // Proteksi ganda jika middleware tembus (sesuai modul AccessController)
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Akses hanya untuk admin!'], 403);
+        }
+
+        $totalPendapatan = Pesanan::where('status', 'selesai')->sum('total_harga');
+        $totalPesanan = Pesanan::count();
+        $totalMenu = Menu::count();
+        $totalUser = User::where('role', 'user')->count();
 
         return response()->json([
-            'success' => true,
-            'message' => 'Data Dashboard Admin',
-            'data' => $data
-        ], 200);
+            'status' => 'success',
+            'data' => [
+                'total_pendapatan' => $totalPendapatan,
+                'total_pesanan' => $totalPesanan,
+                'total_menu' => $totalMenu,
+                'total_user' => $totalUser
+            ]
+        ]);
     }
 }

@@ -4,53 +4,28 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // REGISTER API (Sesuai Modul Step 6)
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'pembeli', // Default role pembeli
-        ]);
-
-        // Membuat token langsung saat register (opsional, tapi umum di Sanctum)
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User berhasil dibuat',
-            'user' => $user,
-            'token' => $token
-        ], 201);
-    }
-
-    // LOGIN API
+    // LOGIN
     public function login(Request $request)
     {
+        // Validasi sesuai gaya modul (tanpa variabel $validator)
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Login gagal'], 401);
         }
 
+        // Membuat token sesuai instruksi modul
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -58,17 +33,40 @@ class AuthController extends Controller
             'message' => 'Login berhasil',
             'token' => $token,
             'user' => $user
-        ], 200);
+        ]);
     }
 
-    // LOGOUT API
-    public function logout(Request $request)
+    // REGISTER
+    public function register(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'role' => 'nullable|string' // Opsional, default user/mahasiswa
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'user'
+        ]);
 
         return response()->json([
             'status' => 'success',
+            'message' => 'User berhasil dibuat',
+            'user' => $user
+        ]);
+    }
+
+    // LOGOUT
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'status' => 'success',
             'message' => 'Logout berhasil'
-        ], 200);
+        ]);
     }
 }

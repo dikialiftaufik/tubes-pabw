@@ -10,16 +10,16 @@ class Pesanan extends Model
     use HasFactory;
 
     protected $table = 'pesanan';
-    
+
     // PENTING: Primary key di database baru adalah 'id_pesanan'
     protected $primaryKey = 'id_pesanan';
 
     // Kolom sesuai tubes-pabw (4).sql
     protected $fillable = [
         'id_user',          // Menggantikan user_id
-        'id_kasir', 
+        'id_kasir',
         'id_reservasi',
-        'tanggal', 
+        'tanggal',
         'total_hrg',        // Menggantikan total_harga
         'status_pesanan',   // Menggantikan status
         'status_pembayaran',

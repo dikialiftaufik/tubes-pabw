@@ -8,15 +8,14 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
+    // User hanya perlu melihat daftar menu
     public function index()
     {
-        // Mengambil semua data menu
         $menus = Menu::all();
-        
         return response()->json([
-            'success' => true,
-            'message' => 'Daftar Menu (Pembeli)',
+            'status' => 'success',
             'data' => $menus
-        ], 200);
+        ]);
     }
+
 }
