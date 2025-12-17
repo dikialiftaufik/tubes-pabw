@@ -59,7 +59,9 @@ class NotificationController extends Controller
 
     public function fetch()
     {
-        $notifications = Notifikasi::where('id_user', auth()->id())
+        $user = auth()->user();
+        
+        $notifications = Notifikasi::where('id_user', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($n) {
@@ -67,14 +69,26 @@ class NotificationController extends Controller
                     'id' => $n->id_notifikasi,
                     'title' => $n->judul_notifikasi,
                     'message' => $n->pesan_notifikasi,
-                    'is_read' => 0, // Default unread karena tidak ada kolom is_read
+                    'is_read' => 0,
                     'created_at' => $n->created_at,
                 ];
             });
 
+        // Tambahkan sapaan dinamis dengan nama user di awal
+        $welcomeNotif = [
+            'id' => 0,
+            'title' => 'Halo, ' . $user->name . '! 👋',
+            'message' => 'Selamat datang kembali di The Komar\'s. Semoga harimu menyenangkan!',
+            'is_read' => 1,
+            'created_at' => now(),
+        ];
+
+        // Gabungkan sapaan di awal dengan notifikasi lainnya
+        $allNotifications = collect([$welcomeNotif])->merge($notifications);
+
         return response()->json([
-            'count' => $notifications->count(),
-            'list' => $notifications
+            'count' => $notifications->count(), // Hitung hanya notifikasi asli (tanpa sapaan)
+            'list' => $allNotifications
         ]);
     }
 
