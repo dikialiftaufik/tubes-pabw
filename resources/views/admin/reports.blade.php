@@ -30,26 +30,30 @@
                         <th style="width: 15%">Total</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @forelse($salesData as $index => $row)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $row->created_at->format('d M Y H:i') }}</td>
-                        <td>INV-{{ str_pad($row->id, 5, '0', STR_PAD_LEFT) }}</td>
-                        <td>{{ $row->user ? $row->user->name : 'Guest' }}</td>
-                        <td>
-                            <ul class="pl-3 mb-0 small">
-                                @foreach($row->detailPesanan as $detail)
-                                    <li>
-                                        {{ $detail->menu->nama ?? 'Menu Terhapus' }} 
-                                        <span class="text-muted">(x{{ $detail->jumlah }})</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </td>
-                        <td>Rp {{ number_format($row->total_harga, 0, ',', '.') }}</td>
-                    </tr>
-                    @empty
+                {{-- Cari baris di dalam tbody --}}
+<tbody>
+    @forelse($salesData as $index => $row)
+    <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>{{ $row->created_at->format('d M Y H:i') }}</td>
+        {{-- UBAH: Gunakan id_pesanan --}}
+        <td>INV-{{ str_pad($row->id_pesanan, 5, '0', STR_PAD_LEFT) }}</td>
+        <td>{{ $row->user ? $row->user->name : 'Guest' }}</td>
+        <td>
+            <ul class="pl-3 mb-0 small">
+                @foreach($row->detailPesanan as $detail)
+                    <li>
+                        {{ $detail->menu->nama ?? 'Menu Terhapus' }} 
+                        <span class="text-muted">(x{{ $detail->jumlah }})</span>
+                    </li>
+                @endforeach
+            </ul>
+        </td>
+        {{-- PERBAIKAN UTAMA: Ubah total_harga jadi total_hrg --}}
+        <td>Rp {{ number_format($row->total_hrg, 0, ',', '.') }}</td>
+    </tr>
+    @empty
+    {{-- ... --}}
                     <tr>
                         <td colspan="6" class="text-center">Tidak ada data penjualan.</td>
                     </tr>
