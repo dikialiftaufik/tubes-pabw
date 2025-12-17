@@ -42,20 +42,21 @@ class PembayaranController extends Controller
         // 3. Simpan ke Database (Gunakan Transaction biar aman)
         $pesanan = DB::transaction(function () use ($cart, $totalHarga) {
 
-            // A. Simpan data utama PESANAN
+            // A. Simpan data utama PESANAN (Sesuaikan nama kolom dengan DB baru)
             $pesanan = Pesanan::create([
-                'user_id' => Auth::id(),        // Siapa yang beli
-                'tanggal' => now(),             // Kapan
-                'total_harga' => $totalHarga,   // Berapa totalnya
-                'status' => 'pending',          // Status awal (menunggu konfirmasi kasir)
-                'metode_pembayaran' => 'cash',  // Default cash
+                'id_user' => Auth::id(),        // UBAH: user_id -> id_user
+                'tanggal' => now(),
+                'total_hrg' => $totalHarga,     // UBAH: total_harga -> total_hrg
+                'status_pesanan' => 'diproses', // UBAH: status -> status_pesanan
+                'metode_pembayaran' => 'cash',  // Default cash (opsional, nanti diupdate saat bayar)
+                'status_pembayaran' => 'pending'
             ]);
 
             // B. Simpan Rincian Menu (DetailPesanan)
             foreach ($cart as $id => $details) {
                 DetailPesanan::create([
-                    'pesanan_id' => $pesanan->id,
-                    'menu_id' => $id,
+                    'id_pesanan' => $pesanan->id_pesanan, // UBAH: pesanan_id -> id_pesanan
+                    'id_menu' => $id,                     // UBAH: menu_id -> id_menu
                     'jumlah' => $details['quantity'],
                     'subtotal' => $details['price'] * $details['quantity']
                 ]);
@@ -67,39 +68,36 @@ class PembayaranController extends Controller
         // 4. Hapus Keranjang (Karena sudah dibeli)
         session()->forget('cart');
 
-        // 5. Redirect ke Halaman Pembayaran (untuk pilih metode & konfirmasi)
-        return redirect()->route('pembayaran.detail', $pesanan->id);
+        // 5. Redirect ke Halaman Pembayaran (gunakan id_pesanan)
+        return redirect()->route('pembayaran.detail', $pesanan->id_pesanan);
     }
 
     // Method untuk confirm pembayaran & redirect LANGSUNG ke menu
-    public function proses($id)
+    public function proses(Request $request, $id)
     {
-        // DEBUG: Log session state SEBELUM proses
-        \Log::info('PAYMENT PROSES START', [
-            'session_id' => session()->getId(),
-            'auth_check' => Auth::check(),
-            'user_id' => Auth::id(),
-        ]);
-
         $pesanan = Pesanan::findOrFail($id);
 
-        // DEBUG: Log session state SETELAH query
-        \Log::info('PAYMENT PROSES AFTER QUERY', [
-            'session_id' => session()->getId(),
-            'auth_check' => Auth::check(),
-            'user_id' => Auth::id(),
-        ]);
+        // Update metode pembayaran jika ada input dari form
+        if ($request->has('metode_pembayaran')) {
+            $pesanan->update([
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'status_pembayaran' => 'lunas' // Anggap lunas jika user klik konfirmasi (demo)
+            ]);
+        }
 
-        // SOLUSI RADIKAL: JANGAN redirect! Langsung render view menu
-        // Redirect corrupt session dengan cookie driver, jadi kita render langsung
+        // SOLUSI SESSION LOSS: Render view langsung TANPA redirect
+        // Redirect menyebabkan session hilang dengan file driver
         $dt_menu = \App\Models\Menu::all();
+
+        // Session flash untuk success message
+        session()->flash('success', 'Pembayaran berhasil! Pesanan sedang diproses.');
+
         return view('menu', compact('dt_menu'));
     }
 
-    // Halaman Sukses (Redirect ke menu setelah beberapa detik)
+    // Halaman Sukses
     public function berhasil()
     {
-        // Bisa langsung redirect atau tampilkan view dulu
         return redirect()->route('menu.index')->with('success', 'Pembayaran berhasil! Terima kasih atas pesanan Anda.');
     }
 }

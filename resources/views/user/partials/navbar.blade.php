@@ -175,14 +175,18 @@
                             <i class="fas fa-user text-warning"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('riwayat.pesanan') }}">
+                                    <i class="fas fa-history me-2"></i>Riwayat Pesanan
+                                </a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button class="dropdown-item text-danger">Logout</button>
+                                    <button class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
                                 </form>
                             </li>
                         </ul>

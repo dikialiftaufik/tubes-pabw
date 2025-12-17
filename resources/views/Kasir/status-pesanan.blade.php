@@ -43,17 +43,17 @@
 
                             <td>{{ $p->detailPesanan->sum('jumlah') }}</td>
 
-                            <td class="status {{ $p->status == 'Selesai' ? 'text-success' : 'text-warning' }}">
-                                {{ $p->status }}
+                            <td class="status {{ $p->status_pesanan == 'Selesai' ? 'text-success' : 'text-warning' }}">
+                                {{ $p->status_pesanan }}
                             </td>
 
                             <td>
-                                <form action="{{ route('kasir.status.update', $p->id) }}" method="POST">
+                                <form action="{{ route('kasir.status.update', $p->id_pesanan) }}" method="POST">
                                     @csrf
                                     @method('PUT')
                                     <button type="submit"
-                                        class="btn btn-sm {{ $p->status == 'Selesai' ? 'btn-secondary' : 'btn-primary' }}">
-                                        {{ $p->status == 'Selesai' ? 'Buka Kembali' : 'Ubah Status' }}
+                                        class="btn btn-sm {{ $p->status_pesanan == 'Selesai' ? 'btn-secondary' : 'btn-primary' }}">
+                                        {{ $p->status_pesanan == 'Selesai' ? 'Buka Kembali' : 'Ubah Status' }}
                                     </button>
                                 </form>
                             </td>

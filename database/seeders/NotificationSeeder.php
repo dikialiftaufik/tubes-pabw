@@ -3,47 +3,72 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Notification;
+use App\Models\Notifikasi;
 use App\Models\User;
 
 class NotificationSeeder extends Seeder
 {
     public function run()
     {
-        // Ambil user pertama (bisa kamu ubah ke user tertentu)
-        $user = User::first();
+        // Ambil semua user dengan role pembeli
+        $pembeliUsers = User::where('role', 'pembeli')->get();
 
-        // 1. Notifikasi sambutan untuk user login
-        if ($user) {
-            Notification::create([
-                'user_id' => $user->id,
-                'title'   => 'Selamat Datang, ' . $user->name . '!',
-                'message' => 'Hai ' . $user->name . ', senang bertemu lagi! Berikut beberapa info menarik untukmu.',
-            ]);
-        }
-
-        // 2. Notifikasi umum (4 item)
-        $notification = [
+        // Notifikasi umum untuk semua pembeli
+        $notifications = [
             [
-                'title'   => 'Promo Spesial Bulan Ini',
-                'message' => 'Nikmati promo hemat hingga 50% untuk menu tertentu.',
+                'judul_notifikasi' => 'Selamat Datang!',
+                'pesan_notifikasi' => 'Selamat datang di The Komar\'s! Nikmati berbagai menu lezat kami.',
             ],
             [
-                'title'   => 'Menu Baru Telah Hadir',
-                'message' => 'Kami menambah beberapa menu baru yang wajib kamu coba!',
+                'judul_notifikasi' => 'Promo Spesial Bulan Ini',
+                'pesan_notifikasi' => 'Nikmati promo hemat hingga 50% untuk menu Tengkleng Kambing dan Tongseng Ayam.',
             ],
             [
-                'title'   => 'Informasi Reservasi',
-                'message' => 'Sekarang reservasi bisa dilakukan lebih mudah melalui website.',
+                'judul_notifikasi' => 'Menu Baru Telah Hadir',
+                'pesan_notifikasi' => 'Kami menambahkan beberapa menu baru yang wajib kamu coba! Cek menu untuk detailnya.',
             ],
             [
-                'title'   => 'Jam Operasional Update',
-                'message' => 'Restoran kini buka sampai pukul 23.00 WIB mulai minggu depan.',
+                'judul_notifikasi' => 'Informasi Reservasi',
+                'pesan_notifikasi' => 'Sekarang reservasi meja bisa dilakukan lebih mudah melalui website. Pesan sekarang!',
+            ],
+            [
+                'judul_notifikasi' => 'Jam Operasional Update',
+                'pesan_notifikasi' => 'Restoran kini buka setiap hari pukul 10.00 - 23.00 WIB. Sampai jumpa!',
+            ],
+            [
+                'judul_notifikasi' => 'Reservasi Dikonfirmasi',
+                'pesan_notifikasi' => 'Reservasi Anda untuk tanggal 2025-12-15 jam 19:00 telah DIKONFIRMASI. Terima kasih!',
+            ],
+            [
+                'judul_notifikasi' => 'Pesanan Siap',
+                'pesan_notifikasi' => 'Pesanan Anda sedang disiapkan. Pesanan akan segera diantar ke meja Anda.',
             ],
         ];
 
-        foreach ($notification as $notif) {
-            Notification::create($notif);
+        // Tambahkan notifikasi untuk setiap pembeli
+        foreach ($pembeliUsers as $user) {
+            foreach ($notifications as $notif) {
+                Notifikasi::create([
+                    'id_user'           => $user->id,
+                    'judul_notifikasi'  => $notif['judul_notifikasi'],
+                    'pesan_notifikasi'  => $notif['pesan_notifikasi'],
+                ]);
+            }
+        }
+
+        // Jika tidak ada pembeli, buat notifikasi untuk user pertama
+        if ($pembeliUsers->isEmpty()) {
+            $user = User::first();
+            if ($user) {
+                foreach ($notifications as $notif) {
+                    Notifikasi::create([
+                        'id_user'           => $user->id,
+                        'judul_notifikasi'  => $notif['judul_notifikasi'],
+                        'pesan_notifikasi'  => $notif['pesan_notifikasi'],
+                    ]);
+                }
+            }
         }
     }
 }
+
