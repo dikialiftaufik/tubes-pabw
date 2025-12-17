@@ -58,10 +58,24 @@ class NotificationController extends Controller
     }
 
     public function fetch()
-{
-    return \App\Models\Notifikasi::where('id_user', auth()->id())
-        ->orderBy('created_at', 'desc')
-        ->get();
+    {
+        $notifications = Notifikasi::where('id_user', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($n) {
+                return [
+                    'id' => $n->id_notifikasi,
+                    'title' => $n->judul_notifikasi,
+                    'message' => $n->pesan_notifikasi,
+                    'is_read' => 0, // Default unread karena tidak ada kolom is_read
+                    'created_at' => $n->created_at,
+                ];
+            });
+
+        return response()->json([
+            'count' => $notifications->count(),
+            'list' => $notifications
+        ]);
     }
 
 }
