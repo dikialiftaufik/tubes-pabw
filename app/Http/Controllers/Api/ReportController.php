@@ -13,7 +13,6 @@ class ReportController extends Controller
 {
     private function getSalesData()
     {
-        // Pastikan relasi 'user' dan 'detailPesanan.menu' ada di model Pesanan
         return Pesanan::with(['user', 'detailPesanan.menu'])
             ->where('status_pesanan', 'Selesai')
             ->orderBy('created_at', 'desc')
@@ -35,7 +34,6 @@ class ReportController extends Controller
     public function exportPdf()
     {
         $salesData = $this->getSalesData();
-        // Menggunakan view yang sama dengan web agar desain konsisten
         $pdf = Pdf::loadView('admin.reports_pdf', compact('salesData'));
         $pdf->setPaper('A4', 'landscape');
         

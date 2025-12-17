@@ -13,7 +13,6 @@ class AuthController extends Controller
     // LOGIN
     public function login(Request $request)
     {
-        // Validasi sesuai gaya modul (tanpa variabel $validator)
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
@@ -25,7 +24,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Login gagal'], 401);
         }
 
-        // Membuat token sesuai instruksi modul
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -43,7 +41,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'role' => 'nullable|string' // Opsional, default user/mahasiswa
+            'role' => 'nullable|string' 
         ]);
 
         $user = User::create([

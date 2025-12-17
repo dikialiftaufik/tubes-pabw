@@ -12,18 +12,12 @@ class AdminDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Hitung Total Pendapatan
-        // SQL: Kolom 'status_pesanan' dan 'total_hrg'. Value di SQL Dump adalah 'Selesai' (Kapital S)
         $pendapatan = Pesanan::where('status_pesanan', 'Selesai')->sum('total_hrg');
 
-        // 2. Hitung Total Pesanan
         $jumlah_pesanan = Pesanan::count();
 
-        // 3. Hitung Total Menu
         $jumlah_menu = Menu::count();
 
-        // 4. Hitung Total Pelanggan
-        // SQL: Role di tabel users adalah 'pembeli', bukan 'user'
         $jumlah_user = User::where('role', 'pembeli')->count();
 
         $data = [

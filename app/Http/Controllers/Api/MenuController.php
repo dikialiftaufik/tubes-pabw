@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    // User hanya perlu melihat daftar menu
     public function index()
     {
         $menus = Menu::all();
