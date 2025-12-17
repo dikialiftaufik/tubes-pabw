@@ -12,26 +12,30 @@ class AdminDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-        
-        // Proteksi ganda jika middleware tembus (sesuai modul AccessController)
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => 'Akses hanya untuk admin!'], 403);
-        }
+        // 1. Hitung Total Pendapatan
+        // SQL: Kolom 'status_pesanan' dan 'total_hrg'. Value di SQL Dump adalah 'Selesai' (Kapital S)
+        $pendapatan = Pesanan::where('status_pesanan', 'Selesai')->sum('total_hrg');
 
-        $totalPendapatan = Pesanan::where('status', 'selesai')->sum('total_harga');
-        $totalPesanan = Pesanan::count();
-        $totalMenu = Menu::count();
-        $totalUser = User::where('role', 'user')->count();
+        // 2. Hitung Total Pesanan
+        $jumlah_pesanan = Pesanan::count();
+
+        // 3. Hitung Total Menu
+        $jumlah_menu = Menu::count();
+
+        // 4. Hitung Total Pelanggan
+        // SQL: Role di tabel users adalah 'pembeli', bukan 'user'
+        $jumlah_user = User::where('role', 'pembeli')->count();
+
+        $data = [
+            'total_pendapatan' => $pendapatan,
+            'total_pesanan' => $jumlah_pesanan,
+            'total_menu' => $jumlah_menu,
+            'total_user' => $jumlah_user
+        ];
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'total_pendapatan' => $totalPendapatan,
-                'total_pesanan' => $totalPesanan,
-                'total_menu' => $totalMenu,
-                'total_user' => $totalUser
-            ]
+            'data' => $data
         ]);
     }
 }

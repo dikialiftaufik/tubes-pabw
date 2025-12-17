@@ -15,27 +15,29 @@ use App\Http\Controllers\Api\ApiPaymentController;
 |--------------------------------------------------------------------------
 */
 
-// 1. API Login (Public)
+// 1. API Login & Register (Public)
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// === API PEMBAYARAN (Punya Anda) ===
-// Ditaruh di luar 'auth:sanctum' agar bisa dites Postman (Simulasi Bank) tanpa perlu login token
+// 2. Menu Public (Agar bisa diakses GET http://127.0.0.1:8001/api/menu)
+Route::get('/menu', [MenuController::class, 'index']);
+
+// 3. API Pembayaran (Public Test)
 Route::get('/cek-status/{id}', [ApiPaymentController::class, 'checkStatus']);
 Route::post('/konfirmasi-bayar', [ApiPaymentController::class, 'confirmPayment']);
 
-
-// === Group Middleware Auth (Harus Login) ===
+// === Group Middleware Auth (Harus Login dengan Token) ===
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Auth: Logout & User Info
+    // Logout & User Info
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
-    // 2. FITUR UNTUK PEMBELI (Role: Pembeli)
+    // Fitur Pembeli
     Route::middleware('role:pembeli')->group(function () {
-        // Menu untuk Pembeli (Read Only)
+        // Jika ingin spesifik path pembeli
         Route::get('/pembeli/menu', [MenuController::class, 'index']);
     });
 
@@ -48,16 +50,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
         // 2. CRUD Menu
+        // Route khusus upload foto (HARUS didefinisikan sebelum apiResource atau secara eksplisit)
+        Route::post('/menu/{id}/upload-foto', [AdminMenuController::class, 'uploadFoto']);
         Route::apiResource('menu', AdminMenuController::class);
 
-        // 3. Report Admin (JSON, Excel, PDF)
-        Route::get('/reports', [ReportController::class, 'index']);
-        Route::get('/reports/export-excel', [ReportController::class, 'exportExcel']);
-        Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf']);
+        // 3. Report Admin 
+        // Mengubah 'reports' menjadi 'laporan' agar sesuai URL Postman Anda
+        Route::get('/laporan', [ReportController::class, 'index']);
+        Route::get('/laporan/export-excel', [ReportController::class, 'exportExcel']);
+        Route::get('/laporan/export-pdf', [ReportController::class, 'exportPdf']);
     });
-
 });
-
-// 1. Auth: Login & Register
-Route::post('/register', [AuthController::class, 'register']); 
-Route::post('/login', [AuthController::class, 'login']);
