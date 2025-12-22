@@ -178,6 +178,9 @@
                             <li><a class="dropdown-item" href="{{ route('riwayat.pesanan') }}">
                                     <i class="fas fa-history me-2"></i>Riwayat Pesanan
                                 </a></li>
+                            <li><a class="dropdown-item" href="{{ route('riwayat.reservasi') }}">
+                                    <i class="fas fa-calendar-check me-2"></i>Riwayat Reservasi
+                                </a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
