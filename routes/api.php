@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ApiPaymentController;
 use App\Http\Controllers\Api\ReservationApiController;
 use App\Http\Controllers\Api\FeedbackApiController;
+use App\Http\Controllers\Api\ApiNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +22,10 @@ use App\Http\Controllers\Api\FeedbackApiController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// 2. Menu Public (Agar bisa diakses GET http://127.0.0.1:8001/api/menu)
+// 2. Menu Public
 Route::get('/menu', [MenuController::class, 'index']);
 
-// 3. API Pembayaran (Public Test)
+// 3. API Pembayaran
 Route::get('/cek-status/{id}', [ApiPaymentController::class, 'checkStatus']);
 Route::post('/konfirmasi-bayar', [ApiPaymentController::class, 'confirmPayment']);
 
@@ -37,15 +38,17 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    // === PINDAHKAN ROUTE NOTIFIKASI KE SINI (DI LUAR GRUP ADMIN) ===
+    // Agar URL-nya menjadi: http://127.0.0.1:8000/api/notifikasi
+    // Dan bisa diakses oleh admin maupun pembeli (sesuai logika controller Anda)
+    Route::post('/notifikasi/{id}/upload-foto', [ApiNotificationController::class, 'uploadFoto']);
+    Route::apiResource('notifikasi', ApiNotificationController::class);
+    // ===============================================================
+
     // Fitur Pembeli
     Route::middleware('role:pembeli')->group(function () {
-        // Jika ingin spesifik path pembeli
         Route::get('/pembeli/menu', [MenuController::class, 'index']);
-        
-        // API Reservasi untuk Pembeli
         Route::apiResource('reservations', ReservationApiController::class);
-        
-        // API Feedback untuk Pembeli
         Route::apiResource('feedback', FeedbackApiController::class);
     });
 
@@ -58,12 +61,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
         // 2. CRUD Menu
-        // Route khusus upload foto (HARUS didefinisikan sebelum apiResource atau secara eksplisit)
         Route::post('/menu/{id}/upload-foto', [AdminMenuController::class, 'uploadFoto']);
         Route::apiResource('menu', AdminMenuController::class);
 
         // 3. Report Admin 
-        // Mengubah 'reports' menjadi 'laporan' agar sesuai URL Postman Anda
         Route::get('/laporan', [ReportController::class, 'index']);
         Route::get('/laporan/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/laporan/export-pdf', [ReportController::class, 'exportPdf']);
