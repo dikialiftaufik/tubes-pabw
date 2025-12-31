@@ -38,33 +38,31 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    // === PINDAHKAN ROUTE NOTIFIKASI KE SINI (DI LUAR GRUP ADMIN) ===
-    // Agar URL-nya menjadi: http://127.0.0.1:8000/api/notifikasi
-    // Dan bisa diakses oleh admin maupun pembeli (sesuai logika controller Anda)
+    // === FITUR UMUM (Bisa akses semua role yg login) ===
+
+    // 1. Notifikasi
     Route::post('/notifikasi/{id}/upload-foto', [ApiNotificationController::class, 'uploadFoto']);
     Route::apiResource('notifikasi', ApiNotificationController::class);
-    // ===============================================================
+
+    // 2. Feedback (DIPINDAHKAN KE SINI - Tidak terpaku role pembeli)
+    Route::post('/feedback/{id}/upload-foto', [FeedbackApiController::class, 'uploadFoto']);
+    Route::apiResource('feedback', FeedbackApiController::class);
+
+
+    // === FITUR KHUSUS ROLE ===
 
     // Fitur Pembeli
     Route::middleware('role:pembeli')->group(function () {
         Route::get('/pembeli/menu', [MenuController::class, 'index']);
         Route::apiResource('reservations', ReservationApiController::class);
-        Route::apiResource('feedback', FeedbackApiController::class);
+        // Feedback dipindah ke atas (umum)
     });
 
-    // ----------------------------------------------------
-    // ROLE: ADMIN
-    // ----------------------------------------------------
+    // Fitur Admin
     Route::middleware('role:admin')->prefix('admin')->group(function () {
-        
-        // 1. Dashboard Admin
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
-
-        // 2. CRUD Menu
         Route::post('/menu/{id}/upload-foto', [AdminMenuController::class, 'uploadFoto']);
         Route::apiResource('menu', AdminMenuController::class);
-
-        // 3. Report Admin 
         Route::get('/laporan', [ReportController::class, 'index']);
         Route::get('/laporan/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('/laporan/export-pdf', [ReportController::class, 'exportPdf']);
