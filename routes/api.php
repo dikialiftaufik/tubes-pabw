@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\ApiNotificationController;
 // 1. API Login & Register (Public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // 2. Menu Public
 Route::get('/menu', [MenuController::class, 'index']);
@@ -34,9 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Logout & User Info
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', [AuthController::class, 'userProfile']); // Lihat Profil
+    Route::post('/user/update', [AuthController::class, 'updateProfile']); // Edit Profil (Perlu POST untuk handle file upload di Mobile lebih mudah)
 
     // === FITUR UMUM (Bisa akses semua role yg login) ===
 
