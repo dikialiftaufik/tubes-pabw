@@ -14,10 +14,21 @@ class ApiNotificationController extends Controller
      * GET: /api/notifikasi
      * Mengambil semua data notifikasi
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Notifikasi::all();
-        return response()->json($data, 200);
+        // Ambil User yang sedang login dari Token
+        $user = $request->user();
+
+        // Ambil notifikasi milik user tersebut saja
+        // Pastikan nama kolom di database adalah 'id_user' (sesuai SQL yang Anda kirim)
+        $notifications = Notifikasi::where('id_user', $user->id)
+                                   ->orderBy('created_at', 'desc')
+                                   ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $notifications
+        ]);
     }
 
     /**
