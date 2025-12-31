@@ -16,15 +16,20 @@ class ApiNotificationController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil User yang sedang login dari Token
+        // 1. Ambil User yang sedang login dari Token
         $user = $request->user();
 
-        // Ambil notifikasi milik user tersebut saja
-        // Pastikan nama kolom di database adalah 'id_user' (sesuai SQL yang Anda kirim)
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        // 2. Query ke database
+        // PENTING: Pastikan nama kolom 'id_user' sesuai dengan yang ada di tabel SQL Anda
         $notifications = Notifikasi::where('id_user', $user->id)
-                                   ->orderBy('created_at', 'desc')
+                                   ->orderBy('created_at', 'desc') // Urutkan dari yang terbaru
                                    ->get();
 
+        // 3. Return JSON dengan format yang konsisten
         return response()->json([
             'status' => 'success',
             'data' => $notifications

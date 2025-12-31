@@ -42,8 +42,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // === FITUR UMUM (Bisa akses semua role yg login) ===
 
     // 1. Notifikasi
-    Route::post('/notifikasi/{id}/upload-foto', [ApiNotificationController::class, 'uploadFoto']);
-    Route::apiResource('notifikasi', ApiNotificationController::class);
+    Route::post('/notifications/{id}/upload-foto', [ApiNotificationController::class, 'uploadFoto']);
+    Route::apiResource('notifications', ApiNotificationController::class);
 
     // 2. Feedback (DIPINDAHKAN KE SINI - Tidak terpaku role pembeli)
     Route::post('/feedback/{id}/upload-foto', [FeedbackApiController::class, 'uploadFoto']);
