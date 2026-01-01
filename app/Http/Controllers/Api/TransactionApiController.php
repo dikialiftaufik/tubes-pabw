@@ -32,7 +32,7 @@ class TransactionApiController extends Controller
         ]);
     }
 
-    // 2. Melakukan Pembayaran (Checkout)
+    // 2. Melakukan Pembayaran. (Checkout)
     public function checkout(Request $request)
     {
         $request->validate([
