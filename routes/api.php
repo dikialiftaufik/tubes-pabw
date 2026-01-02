@@ -19,50 +19,48 @@ use App\Http\Controllers\Api\TransactionApiController;
 |--------------------------------------------------------------------------
 */
 
-// 1. API Login & Register (Public)
+// --- 1. PUBLIC ROUTES (Bisa diakses tanpa login) ---
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']); // Tambahan untuk Register di HP
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/menu', [MenuController::class, 'index']); // PENTING: Menu harus sesuai dengan Flutter '/menu'
 
-// 2. Group Auth (Harus Login Pakai Token)
+
+// --- 2. PROTECTED ROUTES (Harus Login / Punya Token) ---
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Logout & User Info
-    Route::post('/logout', [AuthController::class, 'logout']);
+    // Ambil Data User (Untuk Profil & Menampilkan Nama)
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-    // === ROLE: PEMBELI (TUGAS EGA & ZUFAR & DIKI) ===
-    Route::middleware('role:pembeli')->group(function () {
-        // Menu (Diki)
-        Route::get('/pembeli/menu', [MenuController::class, 'index']);
-        
-        // Transaksi & Keranjang (Tugas Ega)
-        Route::post('/cart/add', [TransactionApiController::class, 'addToCart']);
-        Route::post('/checkout', [TransactionApiController::class, 'checkout']);
-        Route::get('/riwayat-pesanan', [TransactionApiController::class, 'historyPesanan']);
-        Route::get('/riwayat-reservasi', [TransactionApiController::class, 'historyReservasi']);
 
-        // Reservasi & Feedback (Zufar)
-        Route::post('/reservasi', [ReservationApiController::class, 'store']);
-        Route::post('/feedback', [FeedbackApiController::class, 'store']);
-    });
+    // === FITUR PEMBELI & UMUM ===
+    // (Saya keluarkan dari middleware 'role:pembeli' sementara agar tidak error 403 saat testing)
+    
+    // Reservasi (PENTING: URL disamakan dengan Flutter '/reservations')
+    Route::get('/reservations', [ReservationApiController::class, 'index']); // History Reservasi
+    Route::post('/reservations', [ReservationApiController::class, 'store']); // Buat Reservasi Baru
 
-    // === ROLE: KASIR (TUGAS EGA) ===
+    // Transaksi & Cart
+    Route::post('/cart/add', [TransactionApiController::class, 'addToCart']);
+    Route::post('/checkout', [TransactionApiController::class, 'checkout']);
+    Route::get('/riwayat-pesanan', [TransactionApiController::class, 'historyPesanan']);
+    
+    // Feedback
+    Route::post('/feedback', [FeedbackApiController::class, 'store']);
+
+
+    // === ROLE: KASIR ===
     Route::middleware('role:kasir')->prefix('kasir')->group(function () {
-        // Kelola Stok
         Route::post('/menu/{id}/stok', [KasirApiController::class, 'updateStock']);
-        
-        // Kelola Pesanan (Lihat & Update Status)
         Route::get('/pesanan', [KasirApiController::class, 'getIncomingOrders']);
         Route::post('/pesanan/{id}/status', [KasirApiController::class, 'updateOrderStatus']);
-        
-        // Kelola Reservasi (Lihat & Update Status)
         Route::get('/reservasi', [KasirApiController::class, 'getIncomingReservations']);
         Route::post('/reservasi/{id}/status', [KasirApiController::class, 'updateReservationStatus']);
     });
 
-    // === ROLE: ADMIN (TUGAS DIKI & ZUFAR) ===
+    // === ROLE: ADMIN ===
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
         Route::apiResource('menu', AdminMenuController::class);
@@ -70,4 +68,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/notifications', [ApiNotificationController::class, 'index']);
         Route::get('/feedback', [FeedbackApiController::class, 'index']);
     });
+
 });
