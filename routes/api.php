@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ApiPaymentController;
 use App\Http\Controllers\Api\ReservationApiController;
 use App\Http\Controllers\Api\FeedbackApiController;
 use App\Http\Controllers\Api\ApiNotificationController;
+use App\Http\Controllers\Api\PesananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,3 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/laporan/export-pdf', [ReportController::class, 'exportPdf']);
     });
 });
+
+Route::post('/pesanan', [PesananController.class, 'store']);
+Route::get('/pesanan', [PesananController.class, 'index']);
