@@ -49,10 +49,12 @@ class ApiPaymentController extends Controller
     // Body: { "pesanan_id": 1, "metode_pembayaran": "qris" (optional) }
     public function confirmPayment(Request $request)
     {
+        \Log::info('API Confirm Payment Hit', $request->all());
+
         // Validasi input
         $validated = $request->validate([
-            'pesanan_id' => 'required|integer|exists:pesanan,id_pesanan', // Corrected PK validation
-            'metode_pembayaran' => 'nullable|in:cash,qris,transfer'
+            'pesanan_id' => 'required|integer|exists:pesanan,id_pesanan',
+            'metode_pembayaran' => 'nullable|in:cash,qris,transfer,tunai'
         ]);
 
         // Cari pesanan

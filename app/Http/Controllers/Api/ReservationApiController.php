@@ -3,189 +3,105 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Reservation;
-use App\Models\Notifikasi;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ReservationApiController extends Controller
 {
-    /**
-     * GET /api/reservations
-     * Ambil semua reservasi milik user yang login
-     */
+    // Middleware auth sudah di routes/api.php
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
+    // Menampilkan daftar reservasi milik user yang login
     public function index()
     {
-        $reservations = Reservation::where('id_user', Auth::id())
-            ->orderBy('tgl_reservasi', 'desc')
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan atau belum login'
+            ], 401);
+        }
+
+        $reservations = Reservation::where('id_user', $user->id)
+            ->with('user:id,name')  // Join ke users jika perlu
             ->get()
-            ->map(function ($r) {
+            ->map(function ($reservation) {
                 return [
-                    'id' => $r->id_reservasi,
-                    'nama_pemesan' => $r->nama_pemesan,
-                    'jumlah_orang' => $r->jml_org,
-                    'tanggal' => $r->tgl_reservasi,
-                    'jam_mulai' => $r->jam_mulai,
-                    'status' => $r->status_reservasi,
-                    'created_at' => $r->created_at,
+                    'id' => $reservation->id,  // Menggunakan accessor, return id_reservasi
+                    'nama_pemesan' => $reservation->name ?? 'Nama Tidak Ditemukan',  // Menggunakan accessor, return nama_pemesan
+                    'tgl_reservasi' => $reservation->date ?? null,  // Accessor untuk tgl_reservasi
+                    'jam_mulai' => $reservation->time ?? null,  // Accessor untuk jam_mulai
+                    'jml_org' => $reservation->people ?? 0,  // Accessor untuk jml_org
+                    'catatan' => $reservation->catatan ?? '',  // Jika ada di fillable, tambahkan jika perlu
+                    'status' => $reservation->status ?? 'unknown',  // Accessor untuk status_reservasi
+                    'created_at' => $reservation->created_at ?? null,
                 ];
             });
 
         return response()->json([
             'success' => true,
-            'message' => 'Daftar reservasi berhasil diambil',
+            'message' => 'Daftar Reservasi Saya',
             'data' => $reservations
-        ]);
+        ], 200);
     }
 
-    /**
-     * POST /api/reservations
-     * Buat reservasi baru
-     */
+    // Membuat reservasi baru
     public function store(Request $request)
     {
-        $request->validate([
-            'jml_org'       => 'required|integer|min:1',
-            'tgl_reservasi' => 'required|date|after_or_equal:today',
-            'jam_mulai'     => 'required',
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User belum login'
+            ], 401);
+        }
+
+        // Validasi sesuai model
+        $validator = Validator::make($request->all(), [
+            'tgl_reservasi' => 'required|date_format:Y-m-d',
+            'jam_mulai' => 'required',
+            'jml_org' => 'required|integer|min:1',
+            'catatan' => 'nullable|string',
         ]);
 
-        $reservation = Reservation::create([
-            'id_user'          => Auth::id(),
-            'nama_pemesan'     => Auth::user()->name,
-            'jml_org'          => $request->jml_org,
-            'tgl_reservasi'    => $request->tgl_reservasi,
-            'jam_mulai'        => $request->jam_mulai,
-            'status_reservasi' => 'pending',
-        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        // Buat notifikasi untuk user
-        Notifikasi::create([
-            'id_user'           => Auth::id(),
-            'judul_notifikasi'  => 'Reservasi Baru',
-            'pesan_notifikasi'  => 'Reservasi Anda untuk tanggal ' . $request->tgl_reservasi . ' jam ' . $request->jam_mulai . ' sedang menunggu konfirmasi (Pending)',
-        ]);
+        try {
+            $reservation = Reservation::create([
+                'id_user' => Auth::id(),  // Tidak null karena Auth::check()
+                'nama_pemesan' => Auth::user()->name,  // Isi dari user login, tidak null
+                'jml_org' => $request->jml_org,
+                'tgl_reservasi' => $request->tgl_reservasi,
+                'jam_mulai' => $request->jam_mulai,
+                'jam_selesai' => $request->jam_selesai ?? null,  // Jika ada
+                'status_reservasi' => 'pending',
+                'catatan' => $request->catatan,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservasi berhasil dibuat',
-            'data' => [
-                'id' => $reservation->id_reservasi,
-                'nama_pemesan' => $reservation->nama_pemesan,
-                'jumlah_orang' => $reservation->jml_org,
-                'tanggal' => $reservation->tgl_reservasi,
-                'jam_mulai' => $reservation->jam_mulai,
-                'status' => $reservation->status_reservasi,
-            ]
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Reservasi Berhasil Dibuat',
+                'data' => $reservation
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi Kesalahan Server',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    /**
-     * GET /api/reservations/{id}
-     * Ambil detail reservasi tertentu
-     */
-    public function show($id)
-    {
-        $reservation = Reservation::where('id_reservasi', $id)
-            ->where('id_user', Auth::id())
-            ->first();
-
-        if (!$reservation) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Reservasi tidak ditemukan'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $reservation->id_reservasi,
-                'nama_pemesan' => $reservation->nama_pemesan,
-                'jumlah_orang' => $reservation->jml_org,
-                'tanggal' => $reservation->tgl_reservasi,
-                'jam_mulai' => $reservation->jam_mulai,
-                'status' => $reservation->status_reservasi,
-                'created_at' => $reservation->created_at,
-            ]
-        ]);
-    }
-
-    /**
-     * PUT /api/reservations/{id}
-     * Update reservasi (hanya jika status masih pending)
-     */
-    public function update(Request $request, $id)
-    {
-        $reservation = Reservation::where('id_reservasi', $id)
-            ->where('id_user', Auth::id())
-            ->first();
-
-        if (!$reservation) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Reservasi tidak ditemukan'
-            ], 404);
-        }
-
-        if ($reservation->status_reservasi !== 'pending') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Reservasi tidak dapat diubah karena sudah diproses'
-            ], 400);
-        }
-
-        $request->validate([
-            'jml_org'       => 'sometimes|integer|min:1',
-            'tgl_reservasi' => 'sometimes|date|after_or_equal:today',
-            'jam_mulai'     => 'sometimes',
-        ]);
-
-        $reservation->update($request->only(['jml_org', 'tgl_reservasi', 'jam_mulai']));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservasi berhasil diupdate',
-            'data' => [
-                'id' => $reservation->id_reservasi,
-                'nama_pemesan' => $reservation->nama_pemesan,
-                'jumlah_orang' => $reservation->jml_org,
-                'tanggal' => $reservation->tgl_reservasi,
-                'jam_mulai' => $reservation->jam_mulai,
-                'status' => $reservation->status_reservasi,
-            ]
-        ]);
-    }
-
-    /**
-     * DELETE /api/reservations/{id}
-     * Batalkan reservasi (hanya jika status masih pending)
-     */
-    public function destroy($id)
-    {
-        $reservation = Reservation::where('id_reservasi', $id)
-            ->where('id_user', Auth::id())
-            ->first();
-
-        if (!$reservation) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Reservasi tidak ditemukan'
-            ], 404);
-        }
-
-        if ($reservation->status_reservasi !== 'pending') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Reservasi tidak dapat dibatalkan karena sudah diproses'
-            ], 400);
-        }
-
-        $reservation->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservasi berhasil dibatalkan'
-        ]);
-    }
+    // Tambahkan method lain jika diperlukan
 }
