@@ -143,8 +143,8 @@ Aplikasi akan berjalan di `http://localhost:8000`
 
 ## 👥 Tim Pengembang
 
-| NIM          | Nama                    | Kontribusi |
-| ------------ | ----------------------- | ---------- |
+| NIM          | Nama                    |
+| ------------ | ----------------------- |
 | 607012400005 | **Diki Alif Taufik**    |
 | 607012400032 | **Ega Fiandra Pratama** |
 | 607012400093 | **Ahmad Zufar Fathoni** |
